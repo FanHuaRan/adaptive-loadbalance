@@ -1,4 +1,6 @@
 # 阿里巴巴2019中间件性能挑战赛-自适应负载均衡（初赛）赛题
+## 更新日志
+- 2019-06-18 更新 [internal-service](https://code.aliyun.com/middlewarerace2019/internal-service) ,增加 provider 配置变更次数和增大随机性。对应的[docker](https://code.aliyun.com/middlewarerace2019/docker) 项目也已经更新，选手需要重新执行`build.sh`构建项目。
 
 ## 背景
 
@@ -325,6 +327,7 @@ com.aliware.tianchi.TestServerFilter
     比赛使用的特定版本 dubbo, 需要手动安装依赖。
     ```bash
     git clone https://code.aliyun.com/middlewarerace2019/dubbo-internal.git
+    cd dubbo-internal
     mvn clean install -Dmaven.test.skip=true
     ```
    
@@ -333,6 +336,7 @@ com.aliware.tianchi.TestServerFilter
     内置服务，负责加载选手实现的负载均衡算法，启动 Consumer 和 Provider 程序。已经由赛题官方提供，开发过程不需要修改，只需要安装依赖。
     ```bash
     git clone https://code.aliyun.com/middlewarerace2019/internal-service.git
+    cd internal-service
     mvn clean install -Dmaven.test.skip=true
     ```
 
@@ -352,7 +356,8 @@ com.aliware.tianchi.TestServerFilter
   ${宿主机IP地址} provider-medium
   ${宿主机IP地址} provider-large
   ```
-- 构建 demo 的 workspace 项目
+- 构建 `dubbo-internal` 项目，命令在上节已给出。
+- 构建 demo 的 workspace 项目（即本项目）
 - 运行 `internal-service` 项目中的 `com.aliware.tianchi.MyProvider` 启动 Provider，为了模拟负载均衡场景，需要启动三个 Provider，分别指定启动参数 `-Dquota=large`、`-Dquota=medium`、`-Dquota=small`
 - 运行 `internal-service` 项目中的 `com.aliware.tianchi.MyConsumer` 启动 Consumer
 - 打开浏览器 [http://localhost:8087/call](http://localhost:8087/call)，显示`OK`即表示配置成功。
@@ -362,7 +367,7 @@ com.aliware.tianchi.TestServerFilter
 在 `internal-service` 项目中存放了一个 wrk.lua 脚本，选手可以在该项目根目录下执行
 
 ```
-wrk -t4 -c1024 -d60s -T5 --script=./wrk.lua --latency http://localhost:8087/invoke
+wrk -t4 -c1024 -d90s -T5 --script=./wrk.lua --latency http://localhost:8087/invoke
 ```
 
 进行压测，压测前请确认本机已安装压测工具 wrk
@@ -374,7 +379,7 @@ wrk -t4 -c1024 -d60s -T5 --script=./wrk.lua --latency http://localhost:8087/invo
 ### 环境
 ![benchmark_architect](assets/benchmark_architect.png)
 
-所有程序均执行在 docker 中，docker 镜像由评测程序自动根据选手的代码仓库构建，不需要自行构建，若需要自行构建测试，请参考[docker](https://code.aliyun.com/middlewarerace2019/docker/tree/master)
+所有程序均执行在单独的物理机中，每个程序都有 CPU 和内存的限制。评测环境只需要提交代码地址，如果需要模拟测试环境，请参考[docker](https://code.aliyun.com/middlewarerace2019/docker/tree/master)和 [benchmarker](https://code.aliyun.com/middlewarerace2019/benchmarker)
 
 构建环境失败可先查阅 [FAQ](https://code.aliyun.com/middlewarerace2019/adaptive-loadbalance/blob/master/FAQ.md) 查找解决方案
 
@@ -387,7 +392,6 @@ wrk -t4 -c1024 -d60s -T5 --script=./wrk.lua --latency http://localhost:8087/invo
   - 三个 Provider 的总处理能力会分别在小于/约等于/大于请求量三个状态变动；
   - 任意一个 Provider 的单机处理能力都小于总请求量。
   
-本地或 ecs 使用 docker 模拟真实评测可参考 [benchmarker](https://code.aliyun.com/middlewarerace2019/benchmarker)
 
 #### 环境和启动参数
 
@@ -411,11 +415,11 @@ wrk -t4 -c1024 -d60s -T5 --script=./wrk.lua --latency http://localhost:8087/invo
 
 1. 启动 Gateway 和 Provider；
 2. PTS 按固定请求速率向 Gateway 发请求，持续 30 秒。
-3. 预热结束，5秒后进行正式评测。
+3. 预热结束，进行正式评测。
 
 #### 正式评测
 
-1. PTS 以固定请求速率向 Gateway 发送请求；
+1. PTS 以固定连接数(1024)向 Gateway 发送请求；
 2. Provider 的服务能力会按照一定规则变动；
 3. 1分钟后，PTS 停止发请求，压测结束。
 
