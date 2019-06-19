@@ -376,6 +376,10 @@ wrk -t4 -c1024 -d90s -T5 --script=./wrk.lua --latency http://localhost:8087/invo
 
 提交评测前，选手需要添加`middleware2019`为要评测的代码仓库 reporter ，否则无法进行评测。
 
+添加成员地址：https://code.aliyun.com/{你的账号名称}/adaptive-loadbalance/project_members
+
+评测地址  https://tianchi.aliyun.com/competition/entrance/231714/submission
+
 ### 环境
 ![benchmark_architect](assets/benchmark_architect.png)
 
