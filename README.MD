@@ -380,6 +380,8 @@ wrk -t4 -c1024 -d90s -T5 --script=./wrk.lua --latency http://localhost:8087/invo
 
 评测地址  https://tianchi.aliyun.com/competition/entrance/231714/submission
 
+提交请使用 git@开头的 ssh 仓库地址
+
 ### 环境
 ![benchmark_architect](assets/benchmark_architect.png)
 
