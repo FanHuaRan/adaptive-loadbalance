@@ -1,5 +1,6 @@
 # 阿里巴巴2019中间件性能挑战赛-自适应负载均衡（初赛）赛题
 ## 更新日志
+- 2019-06-27 更新 [internal-service](https://code.aliyun.com/middlewarerace2019/internal-service) ,修改 provider-conf.json 配置。对应的[docker](https://code.aliyun.com/middlewarerace2019/docker) 项目也已经更新，选手需要重新执行`build.sh`构建项目。
 - 2019-06-18 更新 [internal-service](https://code.aliyun.com/middlewarerace2019/internal-service) ,增加 provider 配置变更次数和增大随机性。对应的[docker](https://code.aliyun.com/middlewarerace2019/docker) 项目也已经更新，选手需要重新执行`build.sh`构建项目。
 
 ## 背景
