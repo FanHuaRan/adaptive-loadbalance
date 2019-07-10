@@ -1,5 +1,7 @@
 package com.aliware.tianchi;
 
+import com.google.gson.Gson;
+import org.apache.dubbo.rpc.RpcContext;
 import org.apache.dubbo.rpc.listener.CallbackListener;
 import org.apache.dubbo.rpc.service.CallbackService;
 
@@ -25,7 +27,8 @@ public class CallbackServiceImpl implements CallbackService {
                 if (!listeners.isEmpty()) {
                     for (Map.Entry<String, CallbackListener> entry : listeners.entrySet()) {
                         try {
-                            entry.getValue().receiveServerMsg(System.getProperty("quota") + " " + new Date().toString());
+//                            entry.getValue().receiveServerMsg(System.getProperty("quota") + " " + new Date().toString());
+                            entry.getValue().receiveServerMsg(buildMessage());
                         } catch (Throwable t1) {
                             listeners.remove(entry.getKey());
                         }
@@ -47,5 +50,16 @@ public class CallbackServiceImpl implements CallbackService {
     public void addListener(String key, CallbackListener listener) {
         listeners.put(key, listener);
         listener.receiveServerMsg(new Date().toString()); // send notification for change
+    }
+
+    private String buildMessage(){
+        RpcContext rpcContext = RpcContext.getServerContext();
+        String host = rpcContext.getLocalHost();
+        Integer port = rpcContext.getLocalPort();
+
+        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, InstanceInfoUtils.getInstanceInfo());
+
+        Gson gson = new Gson();
+        return gson.toJson(endPointInfoMsg);
     }
 }

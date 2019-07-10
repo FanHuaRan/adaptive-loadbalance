@@ -20,6 +20,7 @@ public class TestClientFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try{
+            // todo 记录响应时间，最小延迟策略？
             Result result = invoker.invoke(invocation);
             return result;
         }catch (Exception e){
