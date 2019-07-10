@@ -56,7 +56,7 @@ public class CallbackServiceImpl implements CallbackService {
         RpcContext rpcContext = RpcContext.getServerContext();
         String host = rpcContext.getLocalHost();
         Integer port = rpcContext.getLocalPort();
-
+        // TODO 获取服务端信息 或者客户端通过Invoker获取？
         EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, InstanceInfoUtils.getInstanceInfo());
 
         Gson gson = new Gson();

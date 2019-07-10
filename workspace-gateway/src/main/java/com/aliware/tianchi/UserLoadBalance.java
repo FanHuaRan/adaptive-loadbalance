@@ -21,7 +21,7 @@ public class UserLoadBalance implements LoadBalance {
 
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-        // todo 拿到provider负载数据和本地测得的响应时间来构建加权随机
+        // todo 拿到provider负载数据和本地测得的响应时间来构建加权随机 获取服务提供者的最大线程数等
         return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));
     }
 }
