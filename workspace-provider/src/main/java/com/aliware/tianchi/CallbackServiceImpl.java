@@ -25,6 +25,11 @@ public class CallbackServiceImpl implements CallbackService {
             @Override
             public void run() {
                 if (!listeners.isEmpty()) {
+                    // 有以下几个方法可以获取部分dubbo相关信息
+                    // 1.org.apache.dubbo.config.context.ConfigManager.getInstance()  强烈推荐！
+                    // 2.ExtensionLoader.getExtensionLoader(Protocol.class).getLoadedExtension("dubbo")
+                    // 3.org.apache.dubbo.rpc.model.ApplicationModel
+                    // 4.org.apache.dubbo.rpc.RpcContext 不在上下文中通过上下文获取？
                     for (Map.Entry<String, CallbackListener> entry : listeners.entrySet()) {
                         try {
 //                            entry.getValue().receiveServerMsg(System.getProperty("quota") + " " + new Date().toString());

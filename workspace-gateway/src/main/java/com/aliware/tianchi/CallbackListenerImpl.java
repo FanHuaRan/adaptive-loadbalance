@@ -17,6 +17,7 @@ public class CallbackListenerImpl implements CallbackListener {
     public void receiveServerMsg(String msg) {
         Gson gson = new Gson();
         EndPointInfoMsg endPointInfoMsg = gson.fromJson(msg, EndPointInfoMsg.class);
+        RpcContext.getContext().getUrl().getParameters()
         // todo 构建加权随机策略
         // System.out.println("receive msg from server :" + msg);
     }
