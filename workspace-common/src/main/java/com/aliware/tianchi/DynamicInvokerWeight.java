@@ -2,9 +2,8 @@ package com.aliware.tianchi;
 
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invoker;
-import org.apache.dubbo.rpc.listener.ListenerInvokerWrapper;
-import org.apache.dubbo.rpc.protocol.ProtocolFilterWrapper;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,7 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @description
  */
 public class DynamicInvokerWeight {
-    private Map<Tuple<String, Integer>, Integer> weights = new ConcurrentHashMap();
+    private final Map<Tuple<String, Integer>, Integer> writeWeights = new ConcurrentHashMap();
+
+    private volatile Map<Tuple<String, Integer>, Integer> readWeights = new HashMap<>();
 
 //    private Map<String, String> hostIpMap = new ConcurrentHashMap<>();
 
@@ -33,12 +34,14 @@ public class DynamicInvokerWeight {
         Integer port = url.getPort();
         Tuple<String, Integer> tuple = new Tuple<>(host, port);
 
-        return weights.get(tuple);
+        return writeWeights.get(tuple);
     }
 
     public void setWeight(String host, Integer port, Integer weight){
         Tuple<String, Integer> tuple = new Tuple<>(host, port);
-        weights.put(tuple, weight);
+        writeWeights.put(tuple, weight);
+
+        this.readWeights = new HashMap<>(writeWeights);
     }
 
     private static final class Inner {
