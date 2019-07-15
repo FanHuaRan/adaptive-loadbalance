@@ -22,7 +22,8 @@ public class UserLoadBalance implements LoadBalance {
 
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-        System.out.println("invokers:" + invokers +" url:" + url);
+//        System.out.println("invokers:" + invokers +" url:" + url +
+//                " invoker.class:" + invokers.get(0).getClass() + "invoker.interface:" + invokers.get(0));
 
         // Number of invokers
         int length = invokers.size();

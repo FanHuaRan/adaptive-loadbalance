@@ -27,12 +27,8 @@ public class DynamicInvokerWeight {
     }
 
     public Integer getWeight(Invoker invoker){
-        if (invoker instanceof ProtocolFilterWrapper){
-            return null;
-        }
+        URL url = invoker.getUrl();
 
-        ListenerInvokerWrapper wrapper = (ListenerInvokerWrapper) invoker;
-        URL url = wrapper.getUrl();
         String host = url.getHost();
         Integer port = url.getPort();
         Tuple<String, Integer> tuple = new Tuple<>(host, port);
