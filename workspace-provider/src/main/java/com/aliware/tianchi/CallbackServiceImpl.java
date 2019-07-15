@@ -1,10 +1,14 @@
 package com.aliware.tianchi;
 
 import com.google.gson.Gson;
+import org.apache.dubbo.config.ProtocolConfig;
+import org.apache.dubbo.config.context.ConfigManager;
 import org.apache.dubbo.rpc.RpcContext;
 import org.apache.dubbo.rpc.listener.CallbackListener;
 import org.apache.dubbo.rpc.service.CallbackService;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
@@ -58,11 +62,18 @@ public class CallbackServiceImpl implements CallbackService {
     }
 
     private String buildMessage(){
-        RpcContext rpcContext = RpcContext.getServerContext();
-        String host = rpcContext.getLocalHost();
-        Integer port = rpcContext.getLocalPort();
-        // TODO 获取服务端信息 或者客户端通过Invoker获取？
-        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, InstanceInfoUtils.getInstanceInfo());
+        String host = null;
+        try {
+            host = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            // ignore
+        }
+
+        ConfigManager configManager = ConfigManager.getInstance();
+        ProtocolConfig protocolConfig = configManager.getProtocols().get("dubbo");
+        Integer port = protocolConfig.getPort();
+        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, InstanceInfoUtils.getInstanceInfo(), protocolConfig);
+
 
         Gson gson = new Gson();
         return gson.toJson(endPointInfoMsg);

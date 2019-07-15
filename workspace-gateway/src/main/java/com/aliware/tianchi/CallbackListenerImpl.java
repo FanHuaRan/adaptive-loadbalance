@@ -1,6 +1,7 @@
 package com.aliware.tianchi;
 
 import com.google.gson.Gson;
+import org.apache.dubbo.config.context.ConfigManager;
 import org.apache.dubbo.rpc.listener.CallbackListener;
 
 /**
@@ -12,14 +13,19 @@ import org.apache.dubbo.rpc.listener.CallbackListener;
  *
  */
 public class CallbackListenerImpl implements CallbackListener {
-
+    private DynamicInvokerWeight dynamicInvokerWeight = DynamicInvokerWeight.getInstance();
     @Override
     public void receiveServerMsg(String msg) {
+         System.out.println("receive msg from server :" + msg);
         Gson gson = new Gson();
         EndPointInfoMsg endPointInfoMsg = gson.fromJson(msg, EndPointInfoMsg.class);
-        RpcContext.getContext().getUrl().getParameters()
-        // todo 构建加权随机策略
-        // System.out.println("receive msg from server :" + msg);
+
+        String host = endPointInfoMsg.getHost();
+        Integer port = endPointInfoMsg.getPort();
+        // TODO weight的科学计算
+        Integer weight = endPointInfoMsg.getProtocolConfig().getThreads();
+
+        dynamicInvokerWeight.setWeight(host, port, weight);
     }
 
 }

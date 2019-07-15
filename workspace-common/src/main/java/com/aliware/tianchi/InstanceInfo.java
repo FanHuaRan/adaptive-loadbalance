@@ -62,7 +62,7 @@ public class InstanceInfo {
     /**
      *
      */
-    private long nonHeapCommitted;
+    private Long nonHeapCommitted;
 
     /**
      * 活动线程数量
@@ -186,11 +186,11 @@ public class InstanceInfo {
         this.nonHeapUsed = nonHeapUsed;
     }
 
-    public long getNonHeapCommitted() {
+    public Long getNonHeapCommitted() {
         return nonHeapCommitted;
     }
 
-    public void setNonHeapCommitted(long nonHeapCommitted) {
+    public void setNonHeapCommitted(Long nonHeapCommitted) {
         this.nonHeapCommitted = nonHeapCommitted;
     }
 

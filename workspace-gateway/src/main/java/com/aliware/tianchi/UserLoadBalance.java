@@ -18,10 +18,53 @@ import java.util.concurrent.ThreadLocalRandom;
  * 选手需要基于此类实现自己的负载均衡算法
  */
 public class UserLoadBalance implements LoadBalance {
+    private DynamicInvokerWeight dynamicInvokerWeight = DynamicInvokerWeight.getInstance();
 
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-        // todo 拿到provider负载数据和本地测得的响应时间来构建加权随机 获取服务提供者的最大线程数等
-        return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));
+        // Number of invokers
+        int length = invokers.size();
+        // Every invoker has the same weight?
+        boolean sameWeight = true;
+        // the weight of every invokers
+        Integer[] weights = new Integer[length];
+        // the first invoker's weight
+        Integer firstWeight = dynamicInvokerWeight.getWeight(invokers.get(0));
+        if (firstWeight == null){
+            // If weight is null, return evenly.
+            return invokers.get(ThreadLocalRandom.current().nextInt(length));
+        }
+
+        weights[0] = firstWeight;
+        // The sum of weights
+        int totalWeight = firstWeight;
+        for (int i = 1; i < length; i++) {
+            Integer weight = dynamicInvokerWeight.getWeight(invokers.get(i));
+            if (weight == null){
+                // If weight is null, return evenly.
+                return invokers.get(ThreadLocalRandom.current().nextInt(length));
+            }
+
+            // save for later use
+            weights[i] = weight;
+            // Sum
+            totalWeight += weight;
+            if (sameWeight && weight != firstWeight) {
+                sameWeight = false;
+            }
+        }
+        if (totalWeight > 0 && !sameWeight) {
+            // If (not every invoker has the same weight & at least one invoker's weight>0), select randomly based on totalWeight.
+            int offset = ThreadLocalRandom.current().nextInt(totalWeight);
+            // Return a invoker based on the random value.
+            for (int i = 0; i < length; i++) {
+                offset -= weights[i];
+                if (offset < 0) {
+                    return invokers.get(i);
+                }
+            }
+        }
+        // If all invokers have the same weight value or totalWeight=0, return evenly.
+        return invokers.get(ThreadLocalRandom.current().nextInt(length));
     }
 }

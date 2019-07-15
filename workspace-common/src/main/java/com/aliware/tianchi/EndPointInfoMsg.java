@@ -1,5 +1,7 @@
 package com.aliware.tianchi;
 
+import org.apache.dubbo.config.ProtocolConfig;
+
 /**
  * @author Fan Huaran
  * created on 2019/7/10
@@ -12,13 +14,16 @@ public class EndPointInfoMsg {
 
     private InstanceInfo instanceInfo;
 
+    private ProtocolConfig protocolConfig;
+
     public EndPointInfoMsg() {
     }
 
-    public EndPointInfoMsg(String host, Integer port, InstanceInfo instanceInfo) {
+    public EndPointInfoMsg(String host, Integer port, InstanceInfo instanceInfo, ProtocolConfig protocolConfig) {
         this.host = host;
         this.port = port;
         this.instanceInfo = instanceInfo;
+        this.protocolConfig = protocolConfig;
     }
 
     public String getHost() {
@@ -45,12 +50,21 @@ public class EndPointInfoMsg {
         this.instanceInfo = instanceInfo;
     }
 
+    public ProtocolConfig getProtocolConfig() {
+        return protocolConfig;
+    }
+
+    public void setProtocolConfig(ProtocolConfig protocolConfig) {
+        this.protocolConfig = protocolConfig;
+    }
+
     @Override
     public String toString() {
-        return "EndpointInfoMsg{" +
+        return "EndPointInfoMsg{" +
                 "host='" + host + '\'' +
                 ", port=" + port +
                 ", instanceInfo=" + instanceInfo +
+                ", protocolConfig=" + protocolConfig +
                 '}';
     }
 }
