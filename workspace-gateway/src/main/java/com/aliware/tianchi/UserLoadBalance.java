@@ -22,6 +22,8 @@ public class UserLoadBalance implements LoadBalance {
 
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
+        System.out.println("invokers:" + invokers +" url:" + url);
+
         // Number of invokers
         int length = invokers.size();
         // Every invoker has the same weight?

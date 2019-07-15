@@ -1,8 +1,10 @@
 package com.aliware.tianchi;
 
 import com.google.gson.Gson;
-import org.apache.dubbo.config.context.ConfigManager;
+import org.apache.dubbo.rpc.RpcContext;
 import org.apache.dubbo.rpc.listener.CallbackListener;
+
+import java.net.InetSocketAddress;
 
 /**
  * @author daofeng.xjf
@@ -19,9 +21,11 @@ public class CallbackListenerImpl implements CallbackListener {
          System.out.println("receive msg from server :" + msg);
         Gson gson = new Gson();
         EndPointInfoMsg endPointInfoMsg = gson.fromJson(msg, EndPointInfoMsg.class);
+        RpcContext rpcContext = RpcContext.getContext();
+        InetSocketAddress inetSocketAddress = rpcContext.getRemoteAddress();
 
-        String host = endPointInfoMsg.getHost();
-        Integer port = endPointInfoMsg.getPort();
+        String host = inetSocketAddress.getHostName();
+        Integer port = inetSocketAddress.getPort();
         // TODO weight的科学计算
         Integer weight = endPointInfoMsg.getProtocolConfig().getThreads();
 

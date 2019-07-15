@@ -3,9 +3,8 @@ package com.aliware.tianchi;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invoker;
 import org.apache.dubbo.rpc.listener.ListenerInvokerWrapper;
+import org.apache.dubbo.rpc.protocol.ProtocolFilterWrapper;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DynamicInvokerWeight {
     private Map<Tuple<String, Integer>, Integer> weights = new ConcurrentHashMap();
 
-    private Map<String, String> hostIpMap = new ConcurrentHashMap<>();
+//    private Map<String, String> hostIpMap = new ConcurrentHashMap<>();
 
     private DynamicInvokerWeight(){
 
@@ -28,25 +27,21 @@ public class DynamicInvokerWeight {
     }
 
     public Integer getWeight(Invoker invoker){
+        if (invoker instanceof ProtocolFilterWrapper){
+            return null;
+        }
+
         ListenerInvokerWrapper wrapper = (ListenerInvokerWrapper) invoker;
         URL url = wrapper.getUrl();
-        String ip = hostIpMap.get(url.getHost());
-        if (ip == null){
-            try {
-                ip = InetAddress.getByName(url.getHost()).getHostAddress();
-            } catch (UnknownHostException e) {
-                // ignore
-            }
-            hostIpMap.put(url.getHost(),ip);
-        }
+        String host = url.getHost();
         Integer port = url.getPort();
-        Tuple<String, Integer> tuple = new Tuple<>(ip, port);
+        Tuple<String, Integer> tuple = new Tuple<>(host, port);
 
         return weights.get(tuple);
     }
 
-    public void setWeight(String ip, Integer port, Integer weight){
-        Tuple<String, Integer> tuple = new Tuple<>(ip, port);
+    public void setWeight(String host, Integer port, Integer weight){
+        Tuple<String, Integer> tuple = new Tuple<>(host, port);
         weights.put(tuple, weight);
     }
 
