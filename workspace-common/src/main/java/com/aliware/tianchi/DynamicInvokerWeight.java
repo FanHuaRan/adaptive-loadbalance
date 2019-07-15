@@ -34,7 +34,7 @@ public class DynamicInvokerWeight {
         Integer port = url.getPort();
         Tuple<String, Integer> tuple = new Tuple<>(host, port);
 
-        return writeWeights.get(tuple);
+        return readWeights.get(tuple);
     }
 
     public void setWeight(String host, Integer port, Integer weight){
