@@ -27,7 +27,7 @@ public class CallbackListenerImpl implements CallbackListener {
         String host = inetSocketAddress.getHostName();
         Integer port = inetSocketAddress.getPort();
         // TODO weight的科学计算
-        Integer weight = endPointInfoMsg.getProtocolConfig().getThreads();
+        Integer weight = endPointInfoMsg.getProtocolConfig().getThreads() * endPointInfoMsg.getInstanceInfo().getCpuCore();
 
         dynamicInvokerWeight.setWeight(host, port, weight);
     }

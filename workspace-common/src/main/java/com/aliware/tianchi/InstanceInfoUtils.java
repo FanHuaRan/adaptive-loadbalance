@@ -43,6 +43,7 @@ public class InstanceInfoUtils {
         instanceInfo.setNonHeapCommitted(heapMen.getCommitted());
 
         /// step2：取线程信息
+        instanceInfo.setCpuCore(Runtime.getRuntime().availableProcessors());
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         // 返回活动守护线程的当前数目。
         instanceInfo.setThreadDaemonCount(threadMXBean.getDaemonThreadCount());
