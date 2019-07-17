@@ -31,7 +31,7 @@ public class CallbackListenerImpl implements CallbackListener {
 		Integer weight = endPointInfoMsg.getProtocolConfig().getThreads();
         // Integer weight =  endPointInfoMsg.getInstanceInfo().getCpuCore();
 
-        dynamicInvokerWeight.setWeight(host, port, weight);
+        dynamicInvokerWeight.setStatisticsWeight(host, port, weight);
     }
 
 }
