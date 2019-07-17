@@ -30,45 +30,45 @@ public class HardCodeInvokerRespAvgTimeRecorder implements InvokerRespAvgTimeRec
 
     private Map<Tuple<String, Integer>, Long[]> invokerAvgRespTimeStorage = new ConcurrentHashMap<>();
 
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+//    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
-    {
-        Date currentTime = new Date();
-        int millionPart = (int) (currentTime.getTime() % 1000);
-        int delay = (1000 - millionPart + 10) % 1000;
-
-        System.out.println("start config schedule executor, currentTime:" + DateTimeUtils.formatDateTime(currentTime) + ", delay:" + delay);
-
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
-            Date now = new Date();
-            int offset = (int) (now.getTime() / 1000 - initSecondTime) - 1;
-            System.out.println("syn avg time start, now:" + DateTimeUtils.formatDateTime(now) + ", offset:" + offset);
-
-            Set<Tuple<String, Integer>> keySet = invokerAvgRespTimeStorage.keySet();
-
-            for (Tuple<String, Integer> key : keySet) {
-                LongAdder[] respTimeArray = invokerTotalRespTimeStorage.get(key);
-                LongAdder[] countArray = invokerTotalCountStorage.get(key);
-                Long[] array = invokerAvgRespTimeStorage.get(key);
-
-                if (respTimeArray == null || countArray == null || array == null) {
-                    continue;
-                }
-
-                long totalRespTime = respTimeArray[offset].sum();
-                long totalCount = countArray[offset].sum();
-
-                if (totalRespTime == 0 || totalCount == 0) {
-                    System.out.println("current avg time, server:" + key + ",offset:" + offset + " current_time:" + DateTimeUtils.formatDateTime(now) + ",avg:" + null);
-                    continue;
-                }
-
-                array[offset] = totalRespTime / totalCount;
-                System.out.println("current avg time, server:" + key + ",offset:" + offset + " current_time:" + DateTimeUtils.formatDateTime(now) + ",avg:" + array[offset]);
-            }
-
-        }, delay, 1000, TimeUnit.MILLISECONDS);
-    }
+//    {
+//        Date currentTime = new Date();
+//        int millionPart = (int) (currentTime.getTime() % 1000);
+//        int delay = (1000 - millionPart + 10) % 1000;
+//
+//        System.out.println("start config schedule executor, currentTime:" + DateTimeUtils.formatDateTime(currentTime) + ", delay:" + delay);
+//
+//        scheduledExecutorService.scheduleAtFixedRate(() -> {
+//            Date now = new Date();
+//            int offset = (int) (now.getTime() / 1000 - initSecondTime) - 1;
+//            System.out.println("syn avg time start, now:" + DateTimeUtils.formatDateTime(now) + ", offset:" + offset);
+//
+//            Set<Tuple<String, Integer>> keySet = invokerAvgRespTimeStorage.keySet();
+//
+//            for (Tuple<String, Integer> key : keySet) {
+//                LongAdder[] respTimeArray = invokerTotalRespTimeStorage.get(key);
+//                LongAdder[] countArray = invokerTotalCountStorage.get(key);
+//                Long[] array = invokerAvgRespTimeStorage.get(key);
+//
+//                if (respTimeArray == null || countArray == null || array == null) {
+//                    continue;
+//                }
+//
+//                long totalRespTime = respTimeArray[offset].sum();
+//                long totalCount = countArray[offset].sum();
+//
+//                if (totalRespTime == 0 || totalCount == 0) {
+//                    System.out.println("current avg time, server:" + key + ",offset:" + offset + " current_time:" + DateTimeUtils.formatDateTime(now) + ",avg:" + null);
+//                    continue;
+//                }
+//
+//                array[offset] = totalRespTime / totalCount;
+//                System.out.println("current avg time, server:" + key + ",offset:" + offset + " current_time:" + DateTimeUtils.formatDateTime(now) + ",avg:" + array[offset]);
+//            }
+//
+//        }, delay, 1000, TimeUnit.MILLISECONDS);
+//    }
 
 
     private void init(Tuple<String, Integer> tuple) {

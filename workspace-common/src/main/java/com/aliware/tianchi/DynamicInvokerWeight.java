@@ -38,13 +38,17 @@ public class DynamicInvokerWeight {
         Tuple<String, Integer> tuple = new Tuple<>(host, port);
 
         Integer statisticsWeight = readWeights.get(tuple);
-        if (true){
+        if (true) {
+            if (statisticsWeight == 0) {
+                statisticsWeight = null;
+            }
             return statisticsWeight;
         }
 
-        if (statisticsWeight == null) {
+        if (statisticsWeight == null || statisticsWeight == 0) {
             return null;
         }
+
         Long avgTime = invokerRespAvgTimeRecorder.getAvgCostTime(invoker, new Date(), 1);
 
         if (avgTime == null) {

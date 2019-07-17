@@ -32,7 +32,7 @@ public class CallbackListenerImpl implements CallbackListener {
         Long avgTime = endPointInfoMsg.getAvgCostTime();
 
         // Integer weight =  endPointInfoMsg.getInstanceInfo().getCpuCore();
-        Integer weight = null;
+        Integer weight = 0;
         if (threads != null && avgTime != null) {
             weight = (int) (threads / avgTime);
         }
