@@ -26,11 +26,11 @@ public class TestClientFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try {
-            Date start = new Date();
+//            Date start = new Date();
             Result result = invoker.invoke(invocation);
-            Date end = new Date();
+//            Date end = new Date();
 
-            dynamicInvokerWeight.recordCostTime(invoker, start, end.getTime() - start.getTime());
+//            dynamicInvokerWeight.recordCostTime(invoker, start, end.getTime() - start.getTime());
 
             return result;
         } catch (Exception e) {
