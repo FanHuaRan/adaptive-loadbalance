@@ -8,6 +8,8 @@ import org.apache.dubbo.rpc.Invoker;
 import org.apache.dubbo.rpc.Result;
 import org.apache.dubbo.rpc.RpcException;
 
+import java.util.Date;
+
 /**
  * @author daofeng.xjf
  *
@@ -17,10 +19,17 @@ import org.apache.dubbo.rpc.RpcException;
  */
 @Activate(group = Constants.PROVIDER)
 public class TestServerFilter implements Filter {
+    private final ProviderCostAvgTimeRecorder providerCostAvgTimeRecorder = HardCodeProviderCostAvgTimeRecorderImpl.getInstance();
+
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try{
+            Date start = new Date();
             Result result = invoker.invoke(invocation);
+            Date end = new Date();
+
+            providerCostAvgTimeRecorder.recordCostTime(start, end.getTime() - start.getTime());
+
             return result;
         }catch (Exception e){
             throw e;

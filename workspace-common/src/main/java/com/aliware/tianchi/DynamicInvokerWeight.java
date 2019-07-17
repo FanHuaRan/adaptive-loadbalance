@@ -38,6 +38,9 @@ public class DynamicInvokerWeight {
         Tuple<String, Integer> tuple = new Tuple<>(host, port);
 
         Integer statisticsWeight = readWeights.get(tuple);
+        if (true){
+            return statisticsWeight;
+        }
 
         if (statisticsWeight == null) {
             return null;

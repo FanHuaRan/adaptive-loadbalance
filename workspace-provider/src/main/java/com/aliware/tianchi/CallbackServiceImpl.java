@@ -44,7 +44,7 @@ public class CallbackServiceImpl implements CallbackService {
                     }
                 }
             }
-        }, 0, 5000);
+        }, 0, 1000);
     }
 
     private Timer timer = new Timer();
@@ -61,7 +61,9 @@ public class CallbackServiceImpl implements CallbackService {
         listener.receiveServerMsg(buildMessage()); // send notification for change
     }
 
-    private String buildMessage(){
+    private ProviderCostAvgTimeRecorder providerCostAvgTimeRecorder = HardCodeProviderCostAvgTimeRecorderImpl.getInstance();
+
+    private String buildMessage() {
         String host = null;
         try {
             host = InetAddress.getLocalHost().getHostAddress();
@@ -72,7 +74,10 @@ public class CallbackServiceImpl implements CallbackService {
         ConfigManager configManager = ConfigManager.getInstance();
         ProtocolConfig protocolConfig = configManager.getProtocols().get("dubbo");
         Integer port = protocolConfig.getPort();
-        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, InstanceInfoUtils.getInstanceInfo(), protocolConfig);
+//        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, InstanceInfoUtils.getInstanceInfo(), protocolConfig);
+        Date now = new Date();
+        Long avgCostTime = providerCostAvgTimeRecorder.getAvgCostTime(now, 1);
+        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, avgCostTime, null, protocolConfig);
 
 
         Gson gson = new Gson();

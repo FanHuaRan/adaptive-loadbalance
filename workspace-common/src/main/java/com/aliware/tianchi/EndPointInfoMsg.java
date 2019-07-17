@@ -12,6 +12,8 @@ public class EndPointInfoMsg {
 
     private Integer port;
 
+    private Long avgCostTime;
+
     private InstanceInfo instanceInfo;
 
     private ProtocolConfig protocolConfig;
@@ -19,9 +21,10 @@ public class EndPointInfoMsg {
     public EndPointInfoMsg() {
     }
 
-    public EndPointInfoMsg(String host, Integer port, InstanceInfo instanceInfo, ProtocolConfig protocolConfig) {
+    public EndPointInfoMsg(String host, Integer port, Long avgCostTime, InstanceInfo instanceInfo, ProtocolConfig protocolConfig) {
         this.host = host;
         this.port = port;
+        this.avgCostTime = avgCostTime;
         this.instanceInfo = instanceInfo;
         this.protocolConfig = protocolConfig;
     }
@@ -40,6 +43,14 @@ public class EndPointInfoMsg {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public Long getAvgCostTime() {
+        return avgCostTime;
+    }
+
+    public void setAvgCostTime(Long avgCostTime) {
+        this.avgCostTime = avgCostTime;
     }
 
     public InstanceInfo getInstanceInfo() {
@@ -63,6 +74,7 @@ public class EndPointInfoMsg {
         return "EndPointInfoMsg{" +
                 "host='" + host + '\'' +
                 ", port=" + port +
+                ", avgCostTime=" + avgCostTime +
                 ", instanceInfo=" + instanceInfo +
                 ", protocolConfig=" + protocolConfig +
                 '}';
