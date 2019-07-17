@@ -56,12 +56,12 @@ public class HardCodeProviderCostAvgTimeRecorderImpl implements ProviderCostAvgT
         long totalCount = invokerTotalCountStorage[offset].sum();
 
         if (totalRespTime == 0 || totalCount == 0) {
-            System.out.println("current avg time,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",avg:" + null);
+            System.out.println("current avg time,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",avg:" + null + "cur_time:" + DateTimeUtils.formatDateTime(new Date()));
             return null;
         }
 
         long avg = totalRespTime / totalCount;
-        System.out.println("current avg time,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",avg:" + avg);
+        System.out.println("current avg time,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",avg:" + avg+ "cur_time:" + DateTimeUtils.formatDateTime(new Date()));
         return avg;
     }
 

@@ -9,11 +9,13 @@ import org.apache.dubbo.rpc.service.CallbackService;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author daofeng.xjf
@@ -25,6 +27,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CallbackServiceImpl implements CallbackService {
 
     public CallbackServiceImpl() {
+        // 控制任务在100ms, 600ms时执行
+        LocalTime localTime = LocalTime.now();
+        int millions = (int) TimeUnit.NANOSECONDS.toMillis(localTime.getNano());
+        int delay = 0;
+        if (millions <= 100){
+            delay = 100 - millions;
+        }else if (millions <= 600){
+            delay = 600 -millions;
+        } else{
+            delay = 1100 - millions;
+        }
+
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -44,7 +58,7 @@ public class CallbackServiceImpl implements CallbackService {
                     }
                 }
             }
-        }, 0, 500);
+        }, delay, 500);
     }
 
     private Timer timer = new Timer();
