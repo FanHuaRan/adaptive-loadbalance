@@ -2,10 +2,15 @@ package com.aliware.tianchi;
 
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invoker;
+import sun.util.calendar.CalendarUtils;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -24,6 +29,46 @@ public class HardCodeInvokerRespAvgTimeRecorder implements InvokerRespAvgTimeRec
     private Map<Tuple<String, Integer>, LongAdder[]> invokerTotalCountStorage = new ConcurrentHashMap<>();
 
     private Map<Tuple<String, Integer>, Long[]> invokerAvgRespTimeStorage = new ConcurrentHashMap<>();
+
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+
+    {
+        Date currentTime = new Date();
+        int millionPart = (int) (currentTime.getTime() % 1000);
+        int delay = (1000 - millionPart + 10) % 1000;
+
+        System.out.println("start config schedule executor, currentTime:" + DateTimeUtils.formatDateTime(currentTime) + ", delay:" + delay);
+
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            Date now = new Date();
+            int offset = (int) (now.getTime() / 1000 - initSecondTime) - 1;
+            System.out.println("syn avg time start, now:" + DateTimeUtils.formatDateTime(now) + ", offset:" + offset);
+
+            Set<Tuple<String, Integer>> keySet = invokerAvgRespTimeStorage.keySet();
+
+            for (Tuple<String, Integer> key : keySet) {
+                LongAdder[] respTimeArray = invokerTotalRespTimeStorage.get(key);
+                LongAdder[] countArray = invokerTotalCountStorage.get(key);
+                Long[] array = invokerAvgRespTimeStorage.get(key);
+
+                if (respTimeArray == null || countArray == null || array == null) {
+                    continue;
+                }
+
+                long totalRespTime = respTimeArray[offset].sum();
+                long totalCount = countArray[offset].sum();
+
+                if (totalRespTime == 0 || totalCount == 0) {
+                    System.out.println("current avg time, server:" + key + ",offset:" + offset + " current_time:" + DateTimeUtils.formatDateTime(now) + ",avg:" + null);
+                    continue;
+                }
+
+                array[offset] = totalRespTime / totalCount;
+                System.out.println("current avg time, server:" + key + ",offset:" + offset + " current_time:" + DateTimeUtils.formatDateTime(now) + ",avg:" + array[offset]);
+            }
+
+        }, delay, 1000, TimeUnit.MILLISECONDS);
+    }
 
 
     private void init(Tuple<String, Integer> tuple) {
@@ -52,12 +97,13 @@ public class HardCodeInvokerRespAvgTimeRecorder implements InvokerRespAvgTimeRec
         LongAdder[] respTimeArray = invokerTotalRespTimeStorage.get(tuple);
         if (respTimeArray == null) {
             init(tuple);
+            respTimeArray = invokerTotalRespTimeStorage.get(tuple);
         }
 
-        respTimeArray = invokerTotalRespTimeStorage.get(tuple);
         LongAdder[] countArray = invokerTotalCountStorage.get(tuple);
 
         int offset = (int) (startTime.getTime() / 1000 - initSecondTime);
+
         respTimeArray[offset].add(respTime);
         countArray[offset].increment();
     }
@@ -74,28 +120,9 @@ public class HardCodeInvokerRespAvgTimeRecorder implements InvokerRespAvgTimeRec
         Integer port = url.getPort();
         Tuple<String, Integer> tuple = new Tuple<>(host, port);
 
-
         Long[] array = invokerAvgRespTimeStorage.get(tuple);
         if (array == null) {
             return null;
-        }
-
-        if (array[offset] == null) {
-            LongAdder[] respTimeArray = invokerTotalRespTimeStorage.get(tuple);
-            LongAdder[] countArray = invokerTotalCountStorage.get(tuple);
-
-            long totalRespTime = respTimeArray[offset].sum();
-            long totalCount = countArray[offset].sum();
-
-            if (totalRespTime == 0 || totalCount == 0){
-                System.out.println("current avg time, tuple:" + tuple + ", current_time:" + time + ",avg:" + 0);
-                return null;
-            }
-
-            if (array[offset] == null) {
-                array[offset] = totalRespTime / totalCount;
-                System.out.println("current avg time, tuple:" + tuple + ", current_time:" + time + ",avg:" + array[offset]);
-            }
         }
 
         return array[offset];
