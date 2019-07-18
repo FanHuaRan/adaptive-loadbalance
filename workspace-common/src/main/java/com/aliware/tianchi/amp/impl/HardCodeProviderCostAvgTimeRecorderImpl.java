@@ -86,7 +86,7 @@ public class HardCodeProviderCostAvgTimeRecorderImpl implements ProviderCostAvgT
         long avg = totalRespTime / totalCount;
         PerformanceIndicator performanceIndicator = new PerformanceIndicator(totalRespTime, totalCount, avg);
         System.out.println("current PerformanceIndicator,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",performanceIndicator:" + performanceIndicator + ",cur_time:" + DateTimeUtils.formatDateTime(new Date()));
-        return new PerformanceIndicator();
+        return performanceIndicator;
     }
 
     protected HardCodeProviderCostAvgTimeRecorderImpl() {
