@@ -4,12 +4,17 @@ import com.aliware.tianchi.amp.HardCodeMetricImpl;
 import com.aliware.tianchi.amp.Metric;
 import com.aliware.tianchi.amp.PerformanceIndicator;
 import com.aliware.tianchi.extension.Tuple;
+import com.aliware.tianchi.util.DateTimeUtils;
+import javassist.runtime.Inner;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invoker;
 
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Fan Huaran
@@ -36,8 +41,17 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
         }
         int freeThreadCount = (int) (threadCount - performanceIndicator.getUsedThreadCount());
         long avgCostTime = performanceIndicator.getAvgCostTime();
-        return (int) (freeThreadCount / avgCostTime);
+        int weight = (int) (freeThreadCount * 100/ avgCostTime);
+
+        if(ThreadLocalRandom.current().nextInt(5000) >= 4999){
+            executor.execute(()-> System.out.println("current time:"+ DateTimeUtils.formatDateTime(new Date())+",key:"+ key +",freeThreadCount:"+ freeThreadCount +",avg_time:"+ avgCostTime +",weight:" +weight));
+        }
+        return weight;
     }
+
+    private static final Executor executor = Executors.newSingleThreadExecutor();
+
+
 
     public void setThreadCount(String host, Integer port, Integer weight) {
         Tuple<String, Integer> key = new Tuple<>(host, port);
