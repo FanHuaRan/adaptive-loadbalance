@@ -22,7 +22,7 @@ public class HardCodeMetricImpl implements Metric {
 
     private static final int STORAGE_LENGTH = 1200;
 
-    private long initHalfSecondTime = new Date().getTime() / 500;
+    private long initHalfSecondTime = System.currentTimeMillis() / 500;
 
     private Map<Tuple<String, Integer>, AtomicReferenceArray<LongAdder>> invokerTotalRespTimeStorage = new ConcurrentHashMap<>(16, 0.5F);
 
@@ -74,7 +74,13 @@ public class HardCodeMetricImpl implements Metric {
 
     @Override
     public PerformanceIndicator getPerformanceIndicator(Invoker invoker, Date reqTime, int beforeWindow) {
-        int offset = (int) (reqTime.getTime() / 500 - initHalfSecondTime) - beforeWindow;
+        int offset = (int) (reqTime.getTime() / 500 - initHalfSecondTime);
+
+        int halfMillionsPart = (int) (reqTime.getTime() % 500);
+        if (halfMillionsPart < 300) {
+            offset -= beforeWindow;
+        }
+
         if (offset < 0) {
             return null;
         }
@@ -152,11 +158,11 @@ public class HardCodeMetricImpl implements Metric {
         return new Tuple<>(host, port);
     }
 
-    public static HardCodeMetricImpl getInstance(){
+    public static HardCodeMetricImpl getInstance() {
         return Inner.instance;
     }
 
-    private HardCodeMetricImpl(){
+    private HardCodeMetricImpl() {
 
     }
 

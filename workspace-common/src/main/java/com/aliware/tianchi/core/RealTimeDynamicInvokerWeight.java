@@ -44,7 +44,7 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
 
         if(ThreadLocalRandom.current().nextInt(5000) >= 4999) {
             executor.execute(() -> {
-                System.out.println("current time:" + DateTimeUtils.formatDateTime(new Date()) + ",key:" + key + ",freeThreadCount:" + freeThreadCount + ",avg_time:" + avgCostTime + ",weight:" + weight);
+                System.out.println("current time:" + DateTimeUtils.formatDateTime(now) + ",key:" + key + ",freeThreadCount:" + freeThreadCount + ",avg_time:" + avgCostTime + ",weight:" + weight);
 //                System.out.flush();
             });
         }
