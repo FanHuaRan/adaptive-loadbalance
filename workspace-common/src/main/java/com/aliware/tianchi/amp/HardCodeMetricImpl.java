@@ -1,6 +1,5 @@
 package com.aliware.tianchi.amp;
 
-import com.aliware.tianchi.core.RealTimeDynamicInvokerWeight;
 import com.aliware.tianchi.extension.Tuple;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invoker;
@@ -12,7 +11,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**

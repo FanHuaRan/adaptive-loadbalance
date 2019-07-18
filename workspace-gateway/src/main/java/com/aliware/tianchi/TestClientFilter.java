@@ -2,16 +2,14 @@ package com.aliware.tianchi;
 
 import com.aliware.tianchi.amp.HardCodeMetricImpl;
 import com.aliware.tianchi.amp.Metric;
-import com.aliware.tianchi.core.OfflineDynamicInvokerWeight;
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.extension.Activate;
-import org.apache.dubbo.rpc.Filter;
-import org.apache.dubbo.rpc.Invocation;
-import org.apache.dubbo.rpc.Invoker;
-import org.apache.dubbo.rpc.Result;
-import org.apache.dubbo.rpc.RpcException;
+import org.apache.dubbo.common.logger.Logger;
+import org.apache.dubbo.common.logger.LoggerFactory;
+import org.apache.dubbo.rpc.*;
 
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author daofeng.xjf
@@ -22,19 +20,24 @@ import java.util.Date;
  */
 @Activate(group = Constants.CONSUMER)
 public class TestClientFilter implements Filter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestClientFilter.class);
 
     private Metric metric = HardCodeMetricImpl.getInstance();
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try {
-            Date start = new Date();
+            long start = System.currentTimeMillis();
             metric.invokeStart(invoker);
 
             Result result = invoker.invoke(invocation);
 
-            Date end = new Date();
-            metric.invokeEnd(invoker, start, end.getTime() - start.getTime());
+            CompletableFuture<Integer> completableFuture = RpcContext.getContext().getCompletableFuture();
+            completableFuture.whenComplete((actual, t) -> {
+                long end = System.currentTimeMillis();
+//                LOGGER.info("<filter>cost:" + (end - start) + ",result:" + actual);
+                metric.invokeEnd(invoker, new Date(start), end - start);
+            });
 
             return result;
         } catch (Exception e) {
