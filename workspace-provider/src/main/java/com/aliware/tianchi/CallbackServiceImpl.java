@@ -2,9 +2,6 @@ package com.aliware.tianchi;
 
 import com.aliware.tianchi.amp.EndPointInfoMsg;
 import com.aliware.tianchi.amp.InstanceInfo;
-import com.aliware.tianchi.amp.PerformanceIndicator;
-import com.aliware.tianchi.amp.impl.HardCodeProviderCostAvgTimeRecorderImpl;
-import com.aliware.tianchi.amp.ProviderCostAvgTimeRecorder;
 import com.google.gson.Gson;
 import org.apache.dubbo.config.ProtocolConfig;
 import org.apache.dubbo.config.context.ConfigManager;
@@ -16,8 +13,6 @@ import java.net.UnknownHostException;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -43,29 +38,29 @@ public class CallbackServiceImpl implements CallbackService {
             delay = 1100 - millions;
         }
 
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (!listeners.isEmpty()) {
-                    // 有以下几个方法可以获取部分dubbo相关信息
-                    // 1.org.apache.dubbo.config.context.ConfigManager.getInstance()  强烈推荐！
-                    // 2.ExtensionLoader.getExtensionLoader(Protocol.class).getLoadedExtension("dubbo")
-                    // 3.org.apache.dubbo.rpc.model.ApplicationModel
-                    // 4.org.apache.dubbo.rpc.RpcContext 不在上下文中通过上下文获取？
-                    for (Map.Entry<String, CallbackListener> entry : listeners.entrySet()) {
-                        try {
-//                            entry.getValue().receiveServerMsg(System.getProperty("quota") + " " + new Date().toString());
-                            entry.getValue().receiveServerMsg(buildMessage());
-                        } catch (Throwable t1) {
-                            listeners.remove(entry.getKey());
-                        }
-                    }
-                }
-            }
-        }, delay, 500);
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                if (!listeners.isEmpty()) {
+//                    // 有以下几个方法可以获取部分dubbo相关信息
+//                    // 1.org.apache.dubbo.config.context.ConfigManager.getInstance()  强烈推荐！
+//                    // 2.ExtensionLoader.getExtensionLoader(Protocol.class).getLoadedExtension("dubbo")
+//                    // 3.org.apache.dubbo.rpc.model.ApplicationModel
+//                    // 4.org.apache.dubbo.rpc.RpcContext 不在上下文中通过上下文获取？
+//                    for (Map.Entry<String, CallbackListener> entry : listeners.entrySet()) {
+//                        try {
+////                            entry.getValue().receiveServerMsg(System.getProperty("quota") + " " + new Date().toString());
+//                            entry.getValue().receiveServerMsg(buildMessage());
+//                        } catch (Throwable t1) {
+//                            listeners.remove(entry.getKey());
+//                        }
+//                    }
+//                }
+//            }
+//        }, delay, 500);
     }
 
-    private Timer timer = new Timer();
+//    private Timer timer = new Timer();
 
     /**
      * key: listener type
@@ -79,7 +74,7 @@ public class CallbackServiceImpl implements CallbackService {
         listener.receiveServerMsg(buildMessage()); // send notification for change
     }
 
-    private ProviderCostAvgTimeRecorder providerCostAvgTimeRecorder = HardCodeProviderCostAvgTimeRecorderImpl.getInstance();
+//    private ProviderCostAvgTimeRecorder providerCostAvgTimeRecorder = HardCodeProviderCostAvgTimeRecorderImpl.getInstance();
 
     private String buildMessage() {
         String host = null;
@@ -95,10 +90,10 @@ public class CallbackServiceImpl implements CallbackService {
 //        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, InstanceInfoUtils.getInstanceInfo(), protocolConfig);
         Date now = new Date();
 //        Long avgCostTime = providerCostAvgTimeRecorder.getAvgCostTime(now, 1);
-        PerformanceIndicator performanceIndicator = providerCostAvgTimeRecorder.getPerformanceIndicator(now, 1);
+//        PerformanceIndicator performanceIndicator = providerCostAvgTimeRecorder.getPerformanceIndicator(now, 1);
         InstanceInfo instanceInfo = new InstanceInfo();
         instanceInfo.setCpuCore(Runtime.getRuntime().availableProcessors());
-        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, performanceIndicator, instanceInfo, protocolConfig);
+        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, null, instanceInfo, protocolConfig);
 
         Gson gson = new Gson();
         return gson.toJson(endPointInfoMsg);

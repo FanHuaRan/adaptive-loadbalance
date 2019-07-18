@@ -1,16 +1,8 @@
 package com.aliware.tianchi;
 
-import com.aliware.tianchi.amp.impl.HardCodeProviderCostAvgTimeRecorderImpl;
-import com.aliware.tianchi.amp.ProviderCostAvgTimeRecorder;
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.extension.Activate;
-import org.apache.dubbo.rpc.Filter;
-import org.apache.dubbo.rpc.Invocation;
-import org.apache.dubbo.rpc.Invoker;
-import org.apache.dubbo.rpc.Result;
-import org.apache.dubbo.rpc.RpcException;
-
-import java.util.Date;
+import org.apache.dubbo.rpc.*;
 
 /**
  * @author daofeng.xjf
@@ -21,18 +13,18 @@ import java.util.Date;
  */
 @Activate(group = Constants.PROVIDER)
 public class TestServerFilter implements Filter {
-    private final ProviderCostAvgTimeRecorder providerCostAvgTimeRecorder = HardCodeProviderCostAvgTimeRecorderImpl.getInstance();
+    // private final ProviderCostAvgTimeRecorder providerCostAvgTimeRecorder = HardCodeProviderCostAvgTimeRecorderImpl.getInstance();
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try{
-            providerCostAvgTimeRecorder.recordStart();
-
-            Date start = new Date();
+//            providerCostAvgTimeRecorder.recordStart();
+//
+//            Date start = new Date();
             Result result = invoker.invoke(invocation);
-            Date end = new Date();
-
-            providerCostAvgTimeRecorder.recordCostTime(start, end.getTime() - start.getTime());
+//            Date end = new Date();
+//
+//            providerCostAvgTimeRecorder.recordCostTime(start, end.getTime() - start.getTime());
 
             return result;
         }catch (Exception e){
