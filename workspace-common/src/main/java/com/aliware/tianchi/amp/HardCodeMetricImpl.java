@@ -99,7 +99,7 @@ public class HardCodeMetricImpl implements Metric {
         }
 
         long totalCostTime = totalTimeArray.get(offset).sum();
-        long totalCount = totalTimeArray.get(offset).sum();
+        long totalCount = totalCountArray.get(offset).sum();
         if (totalCostTime == 0 || totalCount == 0) {
             return null;
         }
