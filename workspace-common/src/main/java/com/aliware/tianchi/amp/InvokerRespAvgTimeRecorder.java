@@ -1,4 +1,4 @@
-package com.aliware.tianchi;
+package com.aliware.tianchi.amp;
 
 import org.apache.dubbo.rpc.Invoker;
 

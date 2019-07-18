@@ -1,4 +1,4 @@
-package com.aliware.tianchi;
+package com.aliware.tianchi.amp;
 
 import java.util.Date;
 
@@ -11,4 +11,6 @@ public interface ProviderCostAvgTimeRecorder {
     void recordCostTime(Date startTime, long respTime);
 
     Long getAvgCostTime(Date time, int beforeSeconds);
+
+    PerformanceIndicator getPerformanceIndicator(Date time, int beforeSeconds);
 }

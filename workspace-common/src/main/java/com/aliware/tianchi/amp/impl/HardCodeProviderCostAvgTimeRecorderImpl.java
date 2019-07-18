@@ -1,4 +1,8 @@
-package com.aliware.tianchi;
+package com.aliware.tianchi.amp.impl;
+
+import com.aliware.tianchi.amp.PerformanceIndicator;
+import com.aliware.tianchi.amp.ProviderCostAvgTimeRecorder;
+import com.aliware.tianchi.util.DateTimeUtils;
 
 import java.util.Date;
 import java.util.concurrent.Executor;
@@ -56,16 +60,36 @@ public class HardCodeProviderCostAvgTimeRecorderImpl implements ProviderCostAvgT
         long totalCount = invokerTotalCountStorage[offset].sum();
 
         if (totalRespTime == 0 || totalCount == 0) {
-            System.out.println("current avg time,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",avg:" + null + "cur_time:" + DateTimeUtils.formatDateTime(new Date()));
+            System.out.println("current avg time,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",avg:" + null + ",cur_time:" + DateTimeUtils.formatDateTime(new Date()));
             return null;
         }
 
         long avg = totalRespTime / totalCount;
-        System.out.println("current avg time,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",avg:" + avg+ "cur_time:" + DateTimeUtils.formatDateTime(new Date()));
+        System.out.println("current avg time,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",avg:" + avg + ",cur_time:" + DateTimeUtils.formatDateTime(new Date()));
         return avg;
     }
 
-    private HardCodeProviderCostAvgTimeRecorderImpl() {
+    @Override
+    public PerformanceIndicator getPerformanceIndicator(Date time, int beforeSeconds) {
+        int offset = (int) (time.getTime() / 1000 - initSecondTime) - beforeSeconds;
+        if (offset < 0) {
+            return null;
+        }
+
+        long totalRespTime = invokerTotalRespTimeStorage[offset].sum();
+        long totalCount = invokerTotalCountStorage[offset].sum();
+        if (totalRespTime == 0 || totalCount == 0) {
+            System.out.println("current PerformanceIndicator,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",performanceIndicator:" + null + ",cur_time:" + DateTimeUtils.formatDateTime(new Date()));
+            return null;
+        }
+
+        long avg = totalRespTime / totalCount;
+        PerformanceIndicator performanceIndicator = new PerformanceIndicator(totalRespTime, totalCount, avg);
+        System.out.println("current PerformanceIndicator,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",performanceIndicator:" + performanceIndicator + ",cur_time:" + DateTimeUtils.formatDateTime(new Date()));
+        return new PerformanceIndicator();
+    }
+
+    protected HardCodeProviderCostAvgTimeRecorderImpl() {
 
     }
 

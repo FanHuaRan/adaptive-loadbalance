@@ -1,5 +1,6 @@
-package com.aliware.tianchi;
+package com.aliware.tianchi.amp;
 
+import com.aliware.tianchi.amp.InstanceInfo;
 import org.apache.dubbo.config.ProtocolConfig;
 
 /**
@@ -12,7 +13,7 @@ public class EndPointInfoMsg {
 
     private Integer port;
 
-    private Long avgCostTime;
+    private PerformanceIndicator performanceIndicator;
 
     private InstanceInfo instanceInfo;
 
@@ -21,10 +22,10 @@ public class EndPointInfoMsg {
     public EndPointInfoMsg() {
     }
 
-    public EndPointInfoMsg(String host, Integer port, Long avgCostTime, InstanceInfo instanceInfo, ProtocolConfig protocolConfig) {
+    public EndPointInfoMsg(String host, Integer port, PerformanceIndicator performanceIndicator, InstanceInfo instanceInfo, ProtocolConfig protocolConfig) {
         this.host = host;
         this.port = port;
-        this.avgCostTime = avgCostTime;
+        this.performanceIndicator = performanceIndicator;
         this.instanceInfo = instanceInfo;
         this.protocolConfig = protocolConfig;
     }
@@ -45,12 +46,12 @@ public class EndPointInfoMsg {
         this.port = port;
     }
 
-    public Long getAvgCostTime() {
-        return avgCostTime;
+    public PerformanceIndicator getPerformanceIndicator() {
+        return performanceIndicator;
     }
 
-    public void setAvgCostTime(Long avgCostTime) {
-        this.avgCostTime = avgCostTime;
+    public void setPerformanceIndicator(PerformanceIndicator performanceIndicator) {
+        this.performanceIndicator = performanceIndicator;
     }
 
     public InstanceInfo getInstanceInfo() {
@@ -74,7 +75,7 @@ public class EndPointInfoMsg {
         return "EndPointInfoMsg{" +
                 "host='" + host + '\'' +
                 ", port=" + port +
-                ", avgCostTime=" + avgCostTime +
+                ", performanceIndicator=" + performanceIndicator +
                 ", instanceInfo=" + instanceInfo +
                 ", protocolConfig=" + protocolConfig +
                 '}';

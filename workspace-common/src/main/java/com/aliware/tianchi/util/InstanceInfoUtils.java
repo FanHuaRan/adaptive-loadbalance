@@ -1,11 +1,10 @@
-package com.aliware.tianchi;
+package com.aliware.tianchi.util;
 
+import com.aliware.tianchi.amp.InstanceInfo;
 import com.sun.management.OperatingSystemMXBean;
 import org.apache.dubbo.common.utils.StringUtils;
 
 import java.lang.management.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Fan Huaran

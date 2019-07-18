@@ -1,9 +1,13 @@
 package com.aliware.tianchi;
 
+import com.aliware.tianchi.amp.EndPointInfoMsg;
+import com.aliware.tianchi.amp.InstanceInfo;
+import com.aliware.tianchi.amp.PerformanceIndicator;
+import com.aliware.tianchi.amp.impl.HardCodeProviderCostAvgTimeRecorderImpl;
+import com.aliware.tianchi.amp.ProviderCostAvgTimeRecorder;
 import com.google.gson.Gson;
 import org.apache.dubbo.config.ProtocolConfig;
 import org.apache.dubbo.config.context.ConfigManager;
-import org.apache.dubbo.rpc.RpcContext;
 import org.apache.dubbo.rpc.listener.CallbackListener;
 import org.apache.dubbo.rpc.service.CallbackService;
 
@@ -90,9 +94,11 @@ public class CallbackServiceImpl implements CallbackService {
         Integer port = protocolConfig.getPort();
 //        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, InstanceInfoUtils.getInstanceInfo(), protocolConfig);
         Date now = new Date();
-        Long avgCostTime = providerCostAvgTimeRecorder.getAvgCostTime(now, 1);
-        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, avgCostTime, null, protocolConfig);
-
+//        Long avgCostTime = providerCostAvgTimeRecorder.getAvgCostTime(now, 1);
+        PerformanceIndicator performanceIndicator = providerCostAvgTimeRecorder.getPerformanceIndicator(now, 1);
+        InstanceInfo instanceInfo = new InstanceInfo();
+        instanceInfo.setCpuCore(Runtime.getRuntime().availableProcessors());
+        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, performanceIndicator, instanceInfo, protocolConfig);
 
         Gson gson = new Gson();
         return gson.toJson(endPointInfoMsg);
