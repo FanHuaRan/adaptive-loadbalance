@@ -8,6 +8,8 @@ import java.util.Date;
  * @description
  */
 public interface ProviderCostAvgTimeRecorder {
+    void recordStart();
+
     void recordCostTime(Date startTime, long respTime);
 
     Long getAvgCostTime(Date time, int beforeSeconds);

@@ -22,6 +22,8 @@ public class HardCodeProviderCostAvgTimeRecorderImpl implements ProviderCostAvgT
 
     private final LongAdder[] invokerTotalCountStorage;
 
+    private final LongAdder usedThreadCount = new LongAdder();
+
     {
         LongAdder[] array = new LongAdder[STORAGE_LENGTH];
         for (int i = 0; i < STORAGE_LENGTH; i++) {
@@ -40,8 +42,16 @@ public class HardCodeProviderCostAvgTimeRecorderImpl implements ProviderCostAvgT
 
 
     @Override
+    public void recordStart() {
+        executor.execute(() -> {
+            usedThreadCount.increment();
+        });
+    }
+
+    @Override
     public void recordCostTime(Date startTime, long respTime) {
         executor.execute(() -> {
+            usedThreadCount.decrement();
             int offset = (int) (startTime.getTime() / 1000 - initSecondTime);
 
             invokerTotalRespTimeStorage[offset].add(respTime);
@@ -84,7 +94,7 @@ public class HardCodeProviderCostAvgTimeRecorderImpl implements ProviderCostAvgT
         }
 
         long avg = totalRespTime / totalCount;
-        PerformanceIndicator performanceIndicator = new PerformanceIndicator(totalRespTime, totalCount, avg);
+        PerformanceIndicator performanceIndicator = new PerformanceIndicator(totalRespTime, totalCount, avg, usedThreadCount.sum());
         System.out.println("current PerformanceIndicator,offset:" + offset + " stat_time:" + DateTimeUtils.formatDateTime(time) + ",performanceIndicator:" + performanceIndicator + ",cur_time:" + DateTimeUtils.formatDateTime(new Date()));
         return performanceIndicator;
     }

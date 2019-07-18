@@ -21,13 +21,19 @@ public class PerformanceIndicator {
      */
     private Long avgCostTime;
 
+    /**
+     * 当前使用的线程数
+     */
+    private Long usedThreadCount;
+
     public PerformanceIndicator() {
     }
 
-    public PerformanceIndicator(Long totalCostTime, Long totalReceiveCount, Long avgCostTime) {
+    public PerformanceIndicator(Long totalCostTime, Long totalReceiveCount, Long avgCostTime, Long usedThreadCount) {
         this.totalCostTime = totalCostTime;
         this.totalReceiveCount = totalReceiveCount;
         this.avgCostTime = avgCostTime;
+        this.usedThreadCount = usedThreadCount;
     }
 
     public Long getTotalCostTime() {
@@ -54,12 +60,21 @@ public class PerformanceIndicator {
         this.avgCostTime = avgCostTime;
     }
 
+    public Long getUsedThreadCount() {
+        return usedThreadCount;
+    }
+
+    public void setUsedThreadCount(Long usedThreadCount) {
+        this.usedThreadCount = usedThreadCount;
+    }
+
     @Override
     public String toString() {
         return "PerformanceIndicator{" +
                 "totalCostTime=" + totalCostTime +
                 ", totalReceiveCount=" + totalReceiveCount +
                 ", avgCostTime=" + avgCostTime +
+                ", usedThreadCount=" + usedThreadCount +
                 '}';
     }
 }
