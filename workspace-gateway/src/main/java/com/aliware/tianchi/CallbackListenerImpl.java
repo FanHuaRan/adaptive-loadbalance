@@ -48,7 +48,7 @@ public class CallbackListenerImpl implements CallbackListener {
         // Integer weight =  endPointInfoMsg.getInstanceInfo().getCpuCore();
         Integer weight = 0;
         if (threads != null && avgTime != null && cpuCore != null) {
-            weight = (int) (cpuCore * threads / avgTime);
+            weight = (int) (threads / avgTime);
         }
         dynamicInvokerWeight.setStatisticsWeight(host, port, weight);
     }
