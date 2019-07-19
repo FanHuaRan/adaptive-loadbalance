@@ -55,7 +55,7 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
         long avgCostTime = performanceIndicator.getAvgCostTime();
         int weight = (int) (cpuCore * freeThreadCount * 100 / avgCostTime);
 
-        if (ThreadLocalRandom.current().nextInt(5000) >= 4900) {
+        if (ThreadLocalRandom.current().nextInt(5000) >= 4999) {
             executor.execute(() -> {
                 logger.info(String.format("<get_weight> current time:%s,key:%s,freeThreadCount:%s,avg_time:%s,weight:%s", DateTimeUtils.formatDateTime(now), key, freeThreadCount, avgCostTime, weight));
             });
