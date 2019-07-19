@@ -1,6 +1,5 @@
-package com.aliware.tianchi.metric.impl;
+package com.aliware.tianchi.metric;
 
-import com.aliware.tianchi.metric.InvokerMetric;
 import com.aliware.tianchi.model.PerformanceIndicator;
 import com.aliware.tianchi.model.Tuple;
 import com.aliware.tianchi.statistics.window.LeapWindowMetric;

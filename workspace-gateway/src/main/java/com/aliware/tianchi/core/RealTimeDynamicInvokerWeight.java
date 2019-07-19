@@ -1,12 +1,13 @@
 package com.aliware.tianchi.core;
 
 import com.aliware.tianchi.metric.InvokerMetric;
-import com.aliware.tianchi.metric.impl.HardCodeInvokerMetricImpl;
-import com.aliware.tianchi.metric.impl.LeapWindowInvokerMetricImpl;
+import com.aliware.tianchi.metric.LeapWindowInvokerMetricImpl;
 import com.aliware.tianchi.model.PerformanceIndicator;
 import com.aliware.tianchi.model.Tuple;
 import com.aliware.tianchi.util.DateTimeUtils;
 import org.apache.dubbo.common.URL;
+import org.apache.dubbo.common.logger.Logger;
+import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.rpc.Invoker;
 
 import java.util.Date;
@@ -22,7 +23,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * @description
  */
 public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
+    private static final Logger logger = LoggerFactory.getLogger(RealTimeDynamicInvokerWeight.class);
+
     private InvokerMetric metric = LeapWindowInvokerMetricImpl.getInstance();
+
+
     private final Map<Tuple<String, Integer>, Integer> invokerThreadCounts = new ConcurrentHashMap();
 
 
@@ -36,26 +41,24 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
 
         Date now = new Date();
         PerformanceIndicator performanceIndicator = metric.getPerformanceIndicator(invoker);
-        // System.out.println("current performanceIndicator:" + performanceIndicator);
 
         if (performanceIndicator == null) {
             return null;
         }
         int freeThreadCount = (int) (threadCount - performanceIndicator.getUsedThreadCount());
         long avgCostTime = performanceIndicator.getAvgCostTime();
-        int weight = (int) (freeThreadCount * 100/ avgCostTime);
+        int weight = (int) (freeThreadCount * 100 / avgCostTime);
 
-        if(ThreadLocalRandom.current().nextInt(5000) >= 4900) {
+        if (ThreadLocalRandom.current().nextInt(5000) >= 4900) {
             executor.execute(() -> {
-                System.out.println("current time:" + DateTimeUtils.formatDateTime(now) + ",key:" + key + ",freeThreadCount:" + freeThreadCount + ",avg_time:" + avgCostTime + ",weight:" + weight);
-//                System.out.flush();
+                logger.info(String.format("current time:%s,key:%s,freeThreadCount:%s,avg_time:%s,weight:%s", DateTimeUtils.formatDateTime(now), key, freeThreadCount, avgCostTime, weight));
             });
         }
+
         return weight;
     }
 
     private static final Executor executor = Executors.newSingleThreadExecutor();
-
 
 
     public void setThreadCount(String host, Integer port, Integer weight) {

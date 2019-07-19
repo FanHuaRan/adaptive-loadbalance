@@ -1,7 +1,7 @@
 package com.aliware.tianchi;
 
 import com.aliware.tianchi.metric.InvokerMetric;
-import com.aliware.tianchi.metric.impl.LeapWindowInvokerMetricImpl;
+import com.aliware.tianchi.metric.LeapWindowInvokerMetricImpl;
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.common.logger.Logger;

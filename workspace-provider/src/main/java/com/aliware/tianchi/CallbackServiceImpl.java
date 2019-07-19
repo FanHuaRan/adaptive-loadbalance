@@ -74,7 +74,6 @@ public class CallbackServiceImpl implements CallbackService {
         listener.receiveServerMsg(buildMessage()); // send notification for change
     }
 
-//    private ProviderCostAvgTimeRecorder providerCostAvgTimeRecorder = HardCodeProviderCostAvgTimeRecorderImpl.getInstance();
 
     private String buildMessage() {
         String host = null;
@@ -87,12 +86,11 @@ public class CallbackServiceImpl implements CallbackService {
         ConfigManager configManager = ConfigManager.getInstance();
         ProtocolConfig protocolConfig = configManager.getProtocols().get("dubbo");
         Integer port = protocolConfig.getPort();
+
 //        EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, InstanceInfoUtils.getInstanceInfo(), protocolConfig);
-        Date now = new Date();
-//        Long avgCostTime = providerCostAvgTimeRecorder.getAvgCostTime(now, 1);
-//        PerformanceIndicator performanceIndicator = providerCostAvgTimeRecorder.getPerformanceIndicator(now, 1);
         InstanceInfo instanceInfo = new InstanceInfo();
         instanceInfo.setCpuCore(Runtime.getRuntime().availableProcessors());
+
         EndPointInfoMsg endPointInfoMsg = new EndPointInfoMsg(host, port, null, instanceInfo, protocolConfig);
 
         Gson gson = new Gson();

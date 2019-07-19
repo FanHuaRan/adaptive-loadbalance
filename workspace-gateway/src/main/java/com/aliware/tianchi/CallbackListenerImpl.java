@@ -18,7 +18,6 @@ import java.net.InetSocketAddress;
  * 用户可以基于获取获取服务端的推送信息，与 CallbackService 搭配使用
  */
 public class CallbackListenerImpl implements CallbackListener {
-//    private OfflineDynamicInvokerWeight dynamicInvokerWeight = OfflineDynamicInvokerWeight.getInstance();
 
     private RealTimeDynamicInvokerWeight realTimeDynamicInvokerWeight = RealTimeDynamicInvokerWeight.getInstance();
 
@@ -33,31 +32,9 @@ public class CallbackListenerImpl implements CallbackListener {
 
         String host = inetSocketAddress.getHostName();
         Integer port = inetSocketAddress.getPort();
-        // TODO weight的科学计算
-        // Integer weight = endPointInfoMsg.getProtocolConfig().getThreads() * endPointInfoMsg.getInstanceInfo().getCpuCore();
         Integer threads = endPointInfoMsg.getProtocolConfig().getThreads();
 
         realTimeDynamicInvokerWeight.setThreadCount(host, port, threads);
-
-//        PerformanceIndicator performanceIndicator = endPointInfoMsg.getPerformanceIndicator();
-//        Long avgTime = null;
-//        if (performanceIndicator != null) {
-//            avgTime = performanceIndicator.getAvgCostTime();
-//        }
-//
-//        Integer cpuCore = null;
-//        InstanceInfo instanceInfo = endPointInfoMsg.getInstanceInfo();
-//        if (instanceInfo != null) {
-//            cpuCore = instanceInfo.getCpuCore();
-//        }
-//
-//        // Integer weight =  endPointInfoMsg.getInstanceInfo().getCpuCore();
-//        Integer weight = 0;
-//        if (threads != null && avgTime != null && cpuCore != null) {
-//            int freeThreads = (int) (threads - performanceIndicator.getUsedThreadCount());
-//            weight = (int) (cpuCore * freeThreads / avgTime);
-//        }
-//        dynamicInvokerWeight.setStatisticsWeight(host, port, weight);
     }
 
 }

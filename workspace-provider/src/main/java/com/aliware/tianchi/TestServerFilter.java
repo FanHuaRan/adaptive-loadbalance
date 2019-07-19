@@ -13,19 +13,11 @@ import org.apache.dubbo.rpc.*;
  */
 @Activate(group = Constants.PROVIDER)
 public class TestServerFilter implements Filter {
-    // private final ProviderCostAvgTimeRecorder providerCostAvgTimeRecorder = HardCodeProviderCostAvgTimeRecorderImpl.getInstance();
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try{
-//            providerCostAvgTimeRecorder.recordStart();
-//
-//            Date start = new Date();
             Result result = invoker.invoke(invocation);
-//            Date end = new Date();
-//
-//            providerCostAvgTimeRecorder.recordCostTime(start, end.getTime() - start.getTime());
-
             return result;
         }catch (Exception e){
             throw e;
