@@ -27,8 +27,9 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
 
     private InvokerMetric metric = LeapWindowInvokerMetricImpl.getInstance();
 
-
     private final Map<Tuple<String, Integer>, Integer> invokerThreadCounts = new ConcurrentHashMap();
+
+    private final Map<Tuple<String, Integer>, Integer> invokerCpuCores = new ConcurrentHashMap();
 
 
     @Override
@@ -36,6 +37,11 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
         Tuple<String, Integer> key = getKey(invoker);
         Integer threadCount = invokerThreadCounts.get(key);
         if (threadCount == null) {
+            return null;
+        }
+
+        Integer cpuCore = invokerCpuCores.get(key);
+        if (cpuCore == null) {
             return null;
         }
 
@@ -47,7 +53,7 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
         }
         int freeThreadCount = (int) (threadCount - performanceIndicator.getUsedThreadCount());
         long avgCostTime = performanceIndicator.getAvgCostTime();
-        int weight = (int) (freeThreadCount * 100 / avgCostTime);
+        int weight = (int) (cpuCore * freeThreadCount * 100 / avgCostTime);
 
         if (ThreadLocalRandom.current().nextInt(5000) >= 4900) {
             executor.execute(() -> {
@@ -61,10 +67,16 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
     private static final Executor executor = Executors.newSingleThreadExecutor();
 
 
-    public void setThreadCount(String host, Integer port, Integer weight) {
+    public void setThreadCount(String host, Integer port, Integer thread) {
         Tuple<String, Integer> key = new Tuple<>(host, port);
 
-        this.invokerThreadCounts.put(key, weight);
+        this.invokerThreadCounts.put(key, thread);
+    }
+
+    public void setCpuCore(String host, Integer port, Integer cpuCore) {
+        Tuple<String, Integer> key = new Tuple<>(host, port);
+
+        this.invokerCpuCores.put(key, cpuCore);
     }
 
     private Tuple<String, Integer> getKey(Invoker invoker) {
@@ -79,11 +91,13 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
     }
 
 
-    private RealTimeDynamicInvokerWeight() {
+    protected RealTimeDynamicInvokerWeight() {
 
     }
 
-    private static final class Inner {
+
+
+    protected static final class Inner {
         private static final RealTimeDynamicInvokerWeight DYNAMIC_INVOKER_WEIGHT = new RealTimeDynamicInvokerWeight();
 
     }

@@ -33,8 +33,10 @@ public class CallbackListenerImpl implements CallbackListener {
         String host = inetSocketAddress.getHostName();
         Integer port = inetSocketAddress.getPort();
         Integer threads = endPointInfoMsg.getProtocolConfig().getThreads();
+        Integer cpuCore = endPointInfoMsg.getInstanceInfo().getCpuCore();
 
         realTimeDynamicInvokerWeight.setThreadCount(host, port, threads);
+        realTimeDynamicInvokerWeight.setCpuCore(host, port, cpuCore);
     }
 
 }
