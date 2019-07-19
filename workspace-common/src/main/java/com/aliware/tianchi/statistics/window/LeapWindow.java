@@ -12,18 +12,29 @@ import java.util.concurrent.locks.ReentrantLock;
  * @description
  */
 public class LeapWindow {
-    // 时间窗口的长度
+    /**
+     * 采样窗口的长度，以毫秒为单位
+     */
     protected final int windowLength;
 
-    // 采样窗口的个数
-    protected final int sampleCount;
-
-    // 以毫秒为单位的时间间隔
+    /**
+     * 时间窗的总时间间隔，以毫秒为单位
+     */
     protected final int intervalInMs;
 
-    // 采样的时间窗口数组
-    protected AtomicReferenceArray<WindowElement> array;
+    /**
+     * 采样窗口的个数 sampleCount=intervalInMs/windowLength
+     */
+    protected final int sampleCount;
 
+    /**
+     * 采样的时间窗口数组，需要使用AtomicReferenceArray保证数组内元素的可见性
+     */
+    protected final AtomicReferenceArray<WindowElement> array;
+
+    /**
+     * 时间窗滑动的时候，涉及多个共享资源，所以需要独占锁保护滑动时候的线程安全
+     */
     protected Lock addLock = new ReentrantLock();
 
     public LeapWindow(int windowLength, int intervalInSec) {
@@ -34,6 +45,12 @@ public class LeapWindow {
         this.array = new AtomicReferenceArray<>(sampleCount);
     }
 
+    /**
+     * 以time为准的当前采样窗口，time通过外部传入，可以支持多种时间（相对时间，网络时间等）
+     *
+     * @param time
+     * @return
+     */
     public WindowElement currentWindowElement(long time) {
         // time每增加一个windowLength的长度，timeId就会增加1，时间窗口就会往前滑动一个
         long timeId = time / windowLength;
@@ -75,7 +92,7 @@ public class LeapWindow {
                 } else {
                     Thread.yield();
                 }
-                // 这个条件不可能存在
+                // 这个条件一般不可能存在，除非允许向之前位置的窗口写数据，然后处理又过度延迟，需要在设计上尽量避免
             } else if (currentWindowStart < old.getWindowStart()) {
                 // Cannot go through here.
                 return new WindowElement(windowLength, currentWindowStart);
@@ -83,16 +100,29 @@ public class LeapWindow {
         }
     }
 
+    /**
+     * 获取以time为准的前一个采样窗口，time通过外部传入，可以支持多种时间（相对时间，网络时间等）
+     *
+     * @param time
+     * @return
+     */
     public WindowElement getPreviousWindow(long time) {
+        // 计算上一个窗的timeId
         long timeId = (time - windowLength) / windowLength;
+        // idx被分成[0,arrayLength-1]中的某一个数，作为array数组中的索引
         int idx = (int) (timeId % array.length());
+        // time = time - 时间窗长度
         time = time - windowLength;
+
+        // 获取窗口元素
         WindowElement windowElement = array.get(idx);
 
+        // null or  采样窗口已过期(即采样窗口的起始时间到当前时间的间隔大于时间窗总间隔)
         if (windowElement == null || isWindowDeprecated(windowElement)) {
             return null;
         }
 
+        // 因为是对数组进行循环使用，所以可能这个窗口是老窗口了。
         if (windowElement.getWindowStart() + windowLength < (time)) {
             return null;
         }
@@ -100,6 +130,12 @@ public class LeapWindow {
         return windowElement;
     }
 
+    /**
+     * 判断采样窗口是否已过期，即采样窗口的起始时间到当前时间的间隔大于时间窗总间隔
+     *
+     * @param windowElement
+     * @return
+     */
     private boolean isWindowDeprecated(WindowElement windowElement) {
         return TimeUtils.currentTimeMillis() - windowElement.getWindowStart() >= intervalInMs;
     }
@@ -112,7 +148,11 @@ public class LeapWindow {
      * @return
      */
     private WindowElement resetWindowTo(WindowElement old, long currentWindowStart) {
+        // 这儿是直接重置窗口基本属性，可以减少内存使用率，但有脏数据的风险
+        // 允许向之前位置的窗口写数据，然后处理又过度延迟就会出现脏写，需要在设计上尽量避免
         old.reset(windowLength, currentWindowStart);
         return old;
+
+        // or return new WindowElement(windowLength, currentWindowStart)
     }
 }

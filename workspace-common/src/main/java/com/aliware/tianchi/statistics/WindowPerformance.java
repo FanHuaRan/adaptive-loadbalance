@@ -1,9 +1,9 @@
-package com.aliware.tianchi.statistics.window;
+package com.aliware.tianchi.statistics;
 
 /**
  * @author Fan Huaran
  * created on 2019/7/19
- * @description
+ * @description 窗口性能信息
  */
 public class WindowPerformance {
     /**

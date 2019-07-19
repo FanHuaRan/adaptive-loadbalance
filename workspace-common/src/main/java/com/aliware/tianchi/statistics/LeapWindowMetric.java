@@ -1,11 +1,13 @@
-package com.aliware.tianchi.statistics.window;
+package com.aliware.tianchi.statistics;
 
+import com.aliware.tianchi.statistics.window.LeapWindow;
+import com.aliware.tianchi.statistics.window.WindowElement;
 import com.aliware.tianchi.util.TimeUtils;
 
 /**
  * @author Fan Huaran
  * created on 2019/7/19
- * @description
+ * @description 滑动窗口的应用之滑动窗口指标记录器
  */
 public class LeapWindowMetric {
 

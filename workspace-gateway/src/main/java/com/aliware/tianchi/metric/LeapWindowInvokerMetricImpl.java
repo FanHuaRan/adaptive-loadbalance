@@ -2,8 +2,8 @@ package com.aliware.tianchi.metric;
 
 import com.aliware.tianchi.model.PerformanceIndicator;
 import com.aliware.tianchi.model.Tuple;
-import com.aliware.tianchi.statistics.window.LeapWindowMetric;
-import com.aliware.tianchi.statistics.window.WindowPerformance;
+import com.aliware.tianchi.statistics.LeapWindowMetric;
+import com.aliware.tianchi.statistics.WindowPerformance;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
