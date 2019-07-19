@@ -5,6 +5,8 @@ import com.aliware.tianchi.model.Tuple;
 import com.aliware.tianchi.statistics.window.LeapWindowMetric;
 import com.aliware.tianchi.statistics.window.WindowPerformance;
 import org.apache.dubbo.common.URL;
+import org.apache.dubbo.common.logger.Logger;
+import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.rpc.Invoker;
 
 import java.util.Map;
@@ -20,6 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @description
  */
 public class LeapWindowInvokerMetricImpl implements InvokerMetric {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LeapWindowInvokerMetricImpl.class);
 
     private static final int WINDOW_LENGTH = 500;
 
@@ -104,14 +107,14 @@ public class LeapWindowInvokerMetricImpl implements InvokerMetric {
         try {
             LeapWindowMetric leapWindowMetric = invokerLeapWindowMetricStorage.get(key);
             if (leapWindowMetric == null) {
-                System.out.println("init leapWindowMetric,key:" + key);
+                LOGGER.info("<InvokerMetric> init leapWindowMetric,key:" + key);
                 leapWindowMetric = new LeapWindowMetric(WINDOW_LENGTH, INTERNAL_IN_SEC);
                 invokerLeapWindowMetricStorage.putIfAbsent(key, leapWindowMetric);
             }
 
             LongAdder usedThreadCounter = invokerUsedThreadCountStorage.get(key);
             if (usedThreadCounter == null) {
-                System.out.println("init usedThreadCounter,key:" + key);
+                LOGGER.info("<InvokerMetric> init usedThreadCounter,key:" + key);
                 usedThreadCounter = new LongAdder();
                 invokerUsedThreadCountStorage.putIfAbsent(key, usedThreadCounter);
             }
