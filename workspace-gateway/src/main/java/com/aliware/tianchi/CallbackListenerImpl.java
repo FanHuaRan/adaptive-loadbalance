@@ -1,9 +1,8 @@
 package com.aliware.tianchi;
 
-import com.aliware.tianchi.amp.EndPointInfoMsg;
-import com.aliware.tianchi.amp.InstanceInfo;
-import com.aliware.tianchi.amp.PerformanceIndicator;
-import com.aliware.tianchi.core.OfflineDynamicInvokerWeight;
+import com.aliware.tianchi.model.EndPointInfoMsg;
+import com.aliware.tianchi.model.InstanceInfo;
+import com.aliware.tianchi.model.PerformanceIndicator;
 import com.aliware.tianchi.core.RealTimeDynamicInvokerWeight;
 import com.google.gson.Gson;
 import org.apache.dubbo.rpc.RpcContext;
@@ -19,7 +18,7 @@ import java.net.InetSocketAddress;
  * 用户可以基于获取获取服务端的推送信息，与 CallbackService 搭配使用
  */
 public class CallbackListenerImpl implements CallbackListener {
-    private OfflineDynamicInvokerWeight dynamicInvokerWeight = OfflineDynamicInvokerWeight.getInstance();
+//    private OfflineDynamicInvokerWeight dynamicInvokerWeight = OfflineDynamicInvokerWeight.getInstance();
 
     private RealTimeDynamicInvokerWeight realTimeDynamicInvokerWeight = RealTimeDynamicInvokerWeight.getInstance();
 
@@ -38,30 +37,27 @@ public class CallbackListenerImpl implements CallbackListener {
         // Integer weight = endPointInfoMsg.getProtocolConfig().getThreads() * endPointInfoMsg.getInstanceInfo().getCpuCore();
         Integer threads = endPointInfoMsg.getProtocolConfig().getThreads();
 
-        if (true){
-            realTimeDynamicInvokerWeight.setThreadCount(host, port, threads);
-            return;
-        }
+        realTimeDynamicInvokerWeight.setThreadCount(host, port, threads);
 
-        PerformanceIndicator performanceIndicator = endPointInfoMsg.getPerformanceIndicator();
-        Long avgTime = null;
-        if (performanceIndicator != null) {
-            avgTime = performanceIndicator.getAvgCostTime();
-        }
-
-        Integer cpuCore = null;
-        InstanceInfo instanceInfo = endPointInfoMsg.getInstanceInfo();
-        if (instanceInfo != null) {
-            cpuCore = instanceInfo.getCpuCore();
-        }
-
-        // Integer weight =  endPointInfoMsg.getInstanceInfo().getCpuCore();
-        Integer weight = 0;
-        if (threads != null && avgTime != null && cpuCore != null) {
-            int freeThreads = (int) (threads - performanceIndicator.getUsedThreadCount());
-            weight = (int) (cpuCore * freeThreads / avgTime);
-        }
-        dynamicInvokerWeight.setStatisticsWeight(host, port, weight);
+//        PerformanceIndicator performanceIndicator = endPointInfoMsg.getPerformanceIndicator();
+//        Long avgTime = null;
+//        if (performanceIndicator != null) {
+//            avgTime = performanceIndicator.getAvgCostTime();
+//        }
+//
+//        Integer cpuCore = null;
+//        InstanceInfo instanceInfo = endPointInfoMsg.getInstanceInfo();
+//        if (instanceInfo != null) {
+//            cpuCore = instanceInfo.getCpuCore();
+//        }
+//
+//        // Integer weight =  endPointInfoMsg.getInstanceInfo().getCpuCore();
+//        Integer weight = 0;
+//        if (threads != null && avgTime != null && cpuCore != null) {
+//            int freeThreads = (int) (threads - performanceIndicator.getUsedThreadCount());
+//            weight = (int) (cpuCore * freeThreads / avgTime);
+//        }
+//        dynamicInvokerWeight.setStatisticsWeight(host, port, weight);
     }
 
 }

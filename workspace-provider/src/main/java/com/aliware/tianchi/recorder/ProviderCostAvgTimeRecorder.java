@@ -1,4 +1,6 @@
-package com.aliware.tianchi.amp;
+package com.aliware.tianchi.recorder;
+
+import com.aliware.tianchi.model.PerformanceIndicator;
 
 import java.util.Date;
 
@@ -7,6 +9,7 @@ import java.util.Date;
  * created on 2019/7/17
  * @description
  */
+@Deprecated
 public interface ProviderCostAvgTimeRecorder {
     void recordStart();
 

@@ -1,8 +1,8 @@
-package com.aliware.tianchi.amp.impl;
+package com.aliware.tianchi.recorder;
 
-import com.aliware.tianchi.amp.PerformanceIndicator;
-import com.aliware.tianchi.amp.ProviderCostAvgTimeRecorder;
+import com.aliware.tianchi.model.PerformanceIndicator;
 import com.aliware.tianchi.util.DateTimeUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.concurrent.Executor;
@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.LongAdder;
  * created on 2019/7/17
  * @description
  */
+@Deprecated
 public class HardCodeProviderCostAvgTimeRecorderImpl implements ProviderCostAvgTimeRecorder {
     private static final int STORAGE_LENGTH = 600;
     private final long initSecondTime = new Date().getTime() / 1000;

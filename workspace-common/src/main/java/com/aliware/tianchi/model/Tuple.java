@@ -1,4 +1,4 @@
-package com.aliware.tianchi.extension;
+package com.aliware.tianchi.model;
 
 import java.util.Objects;
 

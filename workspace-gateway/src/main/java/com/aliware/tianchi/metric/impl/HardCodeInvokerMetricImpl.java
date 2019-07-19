@@ -1,10 +1,12 @@
-package com.aliware.tianchi.amp;
+package com.aliware.tianchi.metric.impl;
 
-import com.aliware.tianchi.extension.Tuple;
+
+import com.aliware.tianchi.metric.InvokerMetric;
+import com.aliware.tianchi.model.PerformanceIndicator;
+import com.aliware.tianchi.model.Tuple;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invoker;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -18,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * created on 2019/7/18
  * @description
  */
-public class HardCodeMetricImpl implements Metric {
+public class HardCodeInvokerMetricImpl implements InvokerMetric {
 
     private static final int STORAGE_LENGTH = 1200;
 
@@ -53,8 +55,9 @@ public class HardCodeMetricImpl implements Metric {
 
 
     @Override
-    public void invokeEnd(Invoker invoker, Date startTime, long costTime) {
+    public void invokeEnd(Invoker invoker, long costTime) {
         executor.execute(() -> {
+
             Tuple<String, Integer> key = getKey(invoker);
             LongAdder threadCounter = invokerUsedThreadCountStorage.get(key);
             if (threadCounter == null) {
@@ -63,7 +66,7 @@ public class HardCodeMetricImpl implements Metric {
             }
             threadCounter.decrement();
 
-            int offset = (int) (startTime.getTime() / 500 - initHalfSecondTime);
+            int offset = (int) (System.currentTimeMillis() / 500 - initHalfSecondTime);
             AtomicReferenceArray<LongAdder> totalTimeArray = invokerTotalRespTimeStorage.get(key);
 
             AtomicReferenceArray<LongAdder> totalCountArray = invokerTotalCountStorage.get(key);
@@ -73,10 +76,12 @@ public class HardCodeMetricImpl implements Metric {
     }
 
     @Override
-    public PerformanceIndicator getPerformanceIndicator(Invoker invoker, Date reqTime, int beforeWindow) {
-        int offset = (int) (reqTime.getTime() / 500 - initHalfSecondTime);
+    public PerformanceIndicator getPerformanceIndicator(Invoker invoker) {
+        int beforeWindow = 1;
+        long currentTime = System.currentTimeMillis();
+        int offset = (int) (currentTime / 500 - initHalfSecondTime);
 
-        int halfMillionsPart = (int) (reqTime.getTime() % 500);
+        int halfMillionsPart = (int) (currentTime % 500);
         if (halfMillionsPart < 300) {
             offset -= beforeWindow;
         }
@@ -158,16 +163,16 @@ public class HardCodeMetricImpl implements Metric {
         return new Tuple<>(host, port);
     }
 
-    public static HardCodeMetricImpl getInstance() {
+    public static HardCodeInvokerMetricImpl getInstance() {
         return Inner.instance;
     }
 
-    private HardCodeMetricImpl() {
+    protected HardCodeInvokerMetricImpl() {
 
     }
 
-    private static final class Inner {
-        private static final HardCodeMetricImpl instance = new HardCodeMetricImpl();
+    protected static final class Inner {
+        private static final HardCodeInvokerMetricImpl instance = new HardCodeInvokerMetricImpl();
 
     }
 }

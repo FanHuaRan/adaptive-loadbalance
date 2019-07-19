@@ -1,4 +1,4 @@
-package com.aliware.tianchi.amp;
+package com.aliware.tianchi.model;
 
 /**
  * @author Fan Huaran

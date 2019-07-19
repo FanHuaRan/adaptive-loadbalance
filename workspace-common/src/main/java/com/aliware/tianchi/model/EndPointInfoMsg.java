@@ -1,6 +1,5 @@
-package com.aliware.tianchi.amp;
+package com.aliware.tianchi.model;
 
-import com.aliware.tianchi.amp.InstanceInfo;
 import org.apache.dubbo.config.ProtocolConfig;
 
 /**

@@ -1,9 +1,10 @@
 package com.aliware.tianchi.core;
 
-import com.aliware.tianchi.amp.HardCodeMetricImpl;
-import com.aliware.tianchi.amp.Metric;
-import com.aliware.tianchi.amp.PerformanceIndicator;
-import com.aliware.tianchi.extension.Tuple;
+import com.aliware.tianchi.metric.InvokerMetric;
+import com.aliware.tianchi.metric.impl.HardCodeInvokerMetricImpl;
+import com.aliware.tianchi.metric.impl.LeapWindowInvokerMetricImpl;
+import com.aliware.tianchi.model.PerformanceIndicator;
+import com.aliware.tianchi.model.Tuple;
 import com.aliware.tianchi.util.DateTimeUtils;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invoker;
@@ -21,7 +22,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @description
  */
 public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
-    private Metric metric = HardCodeMetricImpl.getInstance();
+    private InvokerMetric metric = LeapWindowInvokerMetricImpl.getInstance();
     private final Map<Tuple<String, Integer>, Integer> invokerThreadCounts = new ConcurrentHashMap();
 
 
@@ -34,7 +35,9 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
         }
 
         Date now = new Date();
-        PerformanceIndicator performanceIndicator = metric.getPerformanceIndicator(invoker, now, 1);
+        PerformanceIndicator performanceIndicator = metric.getPerformanceIndicator(invoker);
+        // System.out.println("current performanceIndicator:" + performanceIndicator);
+
         if (performanceIndicator == null) {
             return null;
         }
@@ -42,7 +45,7 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
         long avgCostTime = performanceIndicator.getAvgCostTime();
         int weight = (int) (freeThreadCount * 100/ avgCostTime);
 
-        if(ThreadLocalRandom.current().nextInt(5000) >= 4999) {
+        if(ThreadLocalRandom.current().nextInt(5000) >= 4900) {
             executor.execute(() -> {
                 System.out.println("current time:" + DateTimeUtils.formatDateTime(now) + ",key:" + key + ",freeThreadCount:" + freeThreadCount + ",avg_time:" + avgCostTime + ",weight:" + weight);
 //                System.out.flush();

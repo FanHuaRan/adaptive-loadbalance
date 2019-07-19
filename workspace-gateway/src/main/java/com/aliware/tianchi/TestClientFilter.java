@@ -1,14 +1,13 @@
 package com.aliware.tianchi;
 
-import com.aliware.tianchi.amp.HardCodeMetricImpl;
-import com.aliware.tianchi.amp.Metric;
+import com.aliware.tianchi.metric.InvokerMetric;
+import com.aliware.tianchi.metric.impl.LeapWindowInvokerMetricImpl;
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.rpc.*;
 
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -22,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 public class TestClientFilter implements Filter {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestClientFilter.class);
 
-    private Metric metric = HardCodeMetricImpl.getInstance();
+    private InvokerMetric metric = LeapWindowInvokerMetricImpl.getInstance();
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
@@ -36,7 +35,7 @@ public class TestClientFilter implements Filter {
             completableFuture.whenComplete((actual, t) -> {
                 long end = System.currentTimeMillis();
 //                LOGGER.info("<filter>cost:" + (end - start) + ",result:" + actual);
-                metric.invokeEnd(invoker, new Date(start), end - start);
+                metric.invokeEnd(invoker, end - start);
             });
 
             return result;

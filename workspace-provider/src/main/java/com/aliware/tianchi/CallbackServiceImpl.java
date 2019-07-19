@@ -1,7 +1,7 @@
 package com.aliware.tianchi;
 
-import com.aliware.tianchi.amp.EndPointInfoMsg;
-import com.aliware.tianchi.amp.InstanceInfo;
+import com.aliware.tianchi.model.EndPointInfoMsg;
+import com.aliware.tianchi.model.InstanceInfo;
 import com.google.gson.Gson;
 import org.apache.dubbo.config.ProtocolConfig;
 import org.apache.dubbo.config.context.ConfigManager;

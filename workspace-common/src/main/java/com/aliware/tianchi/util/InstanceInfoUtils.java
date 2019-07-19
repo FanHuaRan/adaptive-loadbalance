@@ -1,6 +1,6 @@
 package com.aliware.tianchi.util;
 
-import com.aliware.tianchi.amp.InstanceInfo;
+import com.aliware.tianchi.model.InstanceInfo;
 import com.sun.management.OperatingSystemMXBean;
 import org.apache.dubbo.common.utils.StringUtils;
 
