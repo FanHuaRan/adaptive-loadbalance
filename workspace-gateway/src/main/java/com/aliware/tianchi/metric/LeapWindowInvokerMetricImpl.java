@@ -73,8 +73,17 @@ public class LeapWindowInvokerMetricImpl implements InvokerMetric {
 
     @Override
     public PerformanceIndicator getPerformanceIndicator(Invoker invoker) {
-        Tuple<String, Integer> key = getKey(invoker);
+        return doGetPerformanceIndicator(getKey(invoker));
+    }
 
+    @Override
+    public PerformanceIndicator getPerformanceIndicator(String host, Integer port) {
+        Tuple<String, Integer> key = new Tuple<>(host, port);
+
+        return doGetPerformanceIndicator(key);
+    }
+
+    private PerformanceIndicator doGetPerformanceIndicator(Tuple<String, Integer> key) {
         LeapWindowMetric leapWindowMetric = invokerLeapWindowMetricStorage.get(key);
         if (leapWindowMetric == null) {
             return null;

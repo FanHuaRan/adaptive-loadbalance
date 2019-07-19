@@ -12,6 +12,8 @@ import org.apache.dubbo.rpc.Invoker;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -31,6 +33,28 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
 
     private final Map<Tuple<String, Integer>, Integer> invokerCpuCores = new ConcurrentHashMap();
 
+    private final Map<Tuple<String, Integer>, PerformanceIndicator> invokerPerformances = new ConcurrentHashMap();
+
+    private Timer timer = new Timer();
+
+    protected RealTimeDynamicInvokerWeight() {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (!invokerThreadCounts.isEmpty()) {
+                    for (Map.Entry<Tuple<String, Integer>, Integer> entry : invokerThreadCounts.entrySet()) {
+                        String host = entry.getKey().getItem1();
+                        Integer port = entry.getKey().getItem2();
+
+                        PerformanceIndicator performanceIndicator = metric.getPerformanceIndicator(host, port);
+                        if (performanceIndicator != null) {
+                            invokerPerformances.put(entry.getKey(), performanceIndicator);
+                        }
+                    }
+                }
+            }
+        }, 0, 50);
+    }
 
     @Override
     public Integer getWeight(Invoker invoker) {
@@ -46,7 +70,16 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
         }
 
         Date now = new Date();
-        PerformanceIndicator performanceIndicator = metric.getPerformanceIndicator(invoker);
+
+        PerformanceIndicator performanceIndicator;
+        if (true) {
+            URL url = invoker.getUrl();
+            String host = url.getHost();
+            Integer port = url.getPort();
+            performanceIndicator = invokerPerformances.get(new Tuple<>(host, port));
+        } else {
+            performanceIndicator = metric.getPerformanceIndicator(invoker);
+        }
 
         if (performanceIndicator == null) {
             return null;
@@ -89,12 +122,6 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
     public static RealTimeDynamicInvokerWeight getInstance() {
         return Inner.DYNAMIC_INVOKER_WEIGHT;
     }
-
-
-    protected RealTimeDynamicInvokerWeight() {
-
-    }
-
 
 
     protected static final class Inner {

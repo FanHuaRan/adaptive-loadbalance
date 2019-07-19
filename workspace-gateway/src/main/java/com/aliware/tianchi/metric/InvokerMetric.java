@@ -15,4 +15,6 @@ public interface InvokerMetric {
     void invokeEnd(Invoker invoker, long costTime);
 
     PerformanceIndicator getPerformanceIndicator(Invoker invoker);
+
+    PerformanceIndicator getPerformanceIndicator(String host, Integer port);
 }
