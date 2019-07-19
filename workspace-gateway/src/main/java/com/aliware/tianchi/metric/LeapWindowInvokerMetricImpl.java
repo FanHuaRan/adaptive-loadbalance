@@ -21,7 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class LeapWindowInvokerMetricImpl implements InvokerMetric {
 
-    private static final int WINDOW_LENGTH = 200;
+    private static final int WINDOW_LENGTH = 500;
 
     private static final int INTERNAL_IN_SEC = 1;
 
