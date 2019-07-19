@@ -64,10 +64,10 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
             return null;
         }
 
-        Integer cpuCore = invokerCpuCores.get(key);
-        if (cpuCore == null) {
-            return null;
-        }
+//        Integer cpuCore = invokerCpuCores.get(key);
+//        if (cpuCore == null) {
+//            return null;
+//        }
 
         Date now = new Date();
 
@@ -86,7 +86,7 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
         }
         int freeThreadCount = (int) (threadCount - performanceIndicator.getUsedThreadCount());
         long avgCostTime = performanceIndicator.getAvgCostTime();
-        int weight = (int) (cpuCore * freeThreadCount * 100 / avgCostTime);
+        int weight = (int) (freeThreadCount * 100 / avgCostTime);
 
         if (ThreadLocalRandom.current().nextInt(5000) >= 4999) {
             executor.execute(() -> {
