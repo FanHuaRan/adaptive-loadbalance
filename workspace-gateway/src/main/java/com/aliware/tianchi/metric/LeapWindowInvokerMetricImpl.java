@@ -90,11 +90,11 @@ public class LeapWindowInvokerMetricImpl implements InvokerMetric {
         }
         long current = System.currentTimeMillis() % WINDOW_LENGTH;
         WindowPerformance windowPerformance;
-//        if (current <= 50) {
-//            windowPerformance = leapWindowMetric.getPreviousWindowPerformance();
-//        } else {
+        if (current <= 100) {
+            windowPerformance = leapWindowMetric.getPreviousWindowPerformance();
+        } else {
             windowPerformance = leapWindowMetric.getCurrentWindowPerformance();
-//        }
+        }
 
         if (windowPerformance == null) {
             return null;
