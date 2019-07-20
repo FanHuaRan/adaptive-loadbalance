@@ -24,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class LeapWindowInvokerMetricImpl implements InvokerMetric {
     private static final Logger LOGGER = LoggerFactory.getLogger(LeapWindowInvokerMetricImpl.class);
 
-    private static final int WINDOW_LENGTH = 500;
+    private static final int WINDOW_LENGTH = 200;
 
     private static final int INTERNAL_IN_SEC = 1;
 
@@ -90,7 +90,7 @@ public class LeapWindowInvokerMetricImpl implements InvokerMetric {
         }
         long current = System.currentTimeMillis() % WINDOW_LENGTH;
         WindowPerformance windowPerformance;
-        if (current <= 100) {
+        if (current <= 50) {
             windowPerformance = leapWindowMetric.getPreviousWindowPerformance();
         } else {
             windowPerformance = leapWindowMetric.getCurrentWindowPerformance();
