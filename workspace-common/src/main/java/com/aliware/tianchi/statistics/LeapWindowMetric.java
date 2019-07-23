@@ -22,6 +22,17 @@ public class LeapWindowMetric {
         windowElement.addPass(costTime);
     }
 
+    public WindowPerformance getCurrentWindowPerformance(){
+        WindowElement windowElement = leapWindow.currentWindowElement(TimeUtils.currentTimeMillis());
+        if (windowElement == null){
+            return null;
+        }
+
+        long totalCount = windowElement.getCount();
+        long totalCostTime = windowElement.getTotalCostTime();
+
+        return new WindowPerformance(totalCount, totalCostTime);
+    }
 
     public WindowPerformance getPreviousWindowPerformance(){
         WindowElement windowElement = leapWindow.getPreviousWindow(TimeUtils.currentTimeMillis());
