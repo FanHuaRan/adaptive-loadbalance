@@ -4,20 +4,13 @@ import com.aliware.tianchi.metric.InvokerMetric;
 import com.aliware.tianchi.metric.LeapWindowInvokerMetricImpl;
 import com.aliware.tianchi.model.PerformanceIndicator;
 import com.aliware.tianchi.model.Tuple;
-import com.aliware.tianchi.util.DateTimeUtils;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.rpc.Invoker;
 
-import java.util.Date;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Fan Huaran
@@ -45,8 +38,6 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
 //        if (cpuCore == null) {
 //            return null;
 //        }
-
-        Date now = new Date();
 
         PerformanceIndicator performanceIndicator = metric.getPerformanceIndicator(invoker);
 
