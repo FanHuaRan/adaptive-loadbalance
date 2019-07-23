@@ -57,17 +57,8 @@ public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
         long avgCostTime = performanceIndicator.getAvgCostTime();
         int weight = (int) (freeThreadCount * 100 / avgCostTime);
 
-        if (ThreadLocalRandom.current().nextInt(5000) >= 4999) {
-            executor.execute(() -> {
-                logger.info(String.format("<get_weight> current time:%s,key:%s,freeThreadCount:%s,avg_time:%s,weight:%s", DateTimeUtils.formatDateTime(now), key, freeThreadCount, avgCostTime, weight));
-            });
-        }
-
         return weight;
     }
-
-    private static final Executor executor = Executors.newSingleThreadExecutor();
-
 
     public void setThreadCount(String host, Integer port, Integer thread) {
         Tuple<String, Integer> key = new Tuple<>(host, port);
