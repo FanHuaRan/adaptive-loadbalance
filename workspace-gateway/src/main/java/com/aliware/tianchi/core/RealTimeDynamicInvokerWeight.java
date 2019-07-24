@@ -2,8 +2,10 @@ package com.aliware.tianchi.core;
 
 import com.aliware.tianchi.metric.InvokerMetric;
 import com.aliware.tianchi.metric.LeapWindowInvokerMetricImpl;
+import com.aliware.tianchi.metric.RelativeLeapWindowInvokerMetricImpl;
 import com.aliware.tianchi.model.PerformanceIndicator;
 import com.aliware.tianchi.model.Tuple;
+import com.aliware.tianchi.statistics.RelativeLeapWindowMetric;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
@@ -15,12 +17,15 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Fan Huaran
  * created on 2019/7/18
- * @description
+ * @description 动态权重源实现，策略是：权重= 剩余线程数/平均响应时间
+ * 平均响应时间可以是以下两种：
+ * 1.时间滑动窗口，前500s或者当前500s响应时间，QPS可到125W
+ * 2.调用滑动窗口，前200次调用平均响应时间，完全滑动, QPS可到127W
  */
 public class RealTimeDynamicInvokerWeight implements DynamicInvokerWeight {
     private static final Logger logger = LoggerFactory.getLogger(RealTimeDynamicInvokerWeight.class);
-
-    private InvokerMetric metric = LeapWindowInvokerMetricImpl.getInstance();
+    //    private InvokerMetric metric = LeapWindowInvokerMetricImpl.getInstance();
+    private InvokerMetric metric = RelativeLeapWindowInvokerMetricImpl.getInstance();
 
     private final Map<Tuple<String, Integer>, Integer> invokerThreadCounts = new ConcurrentHashMap();
 

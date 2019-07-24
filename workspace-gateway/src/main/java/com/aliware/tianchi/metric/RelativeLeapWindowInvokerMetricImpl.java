@@ -3,6 +3,7 @@ package com.aliware.tianchi.metric;
 import com.aliware.tianchi.model.PerformanceIndicator;
 import com.aliware.tianchi.model.Tuple;
 import com.aliware.tianchi.statistics.LeapWindowMetric;
+import com.aliware.tianchi.statistics.RelativeLeapWindowMetric;
 import com.aliware.tianchi.statistics.WindowPerformance;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.logger.Logger;
@@ -21,14 +22,12 @@ import java.util.concurrent.locks.ReentrantLock;
  * created on 2019/7/19
  * @description
  */
-public class LeapWindowInvokerMetricImpl implements InvokerMetric {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LeapWindowInvokerMetricImpl.class);
+public class RelativeLeapWindowInvokerMetricImpl implements InvokerMetric {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RelativeLeapWindowInvokerMetricImpl.class);
 
-    private static final int WINDOW_LENGTH = 500;
+    private static final int WINDOW_LENGTH = 200;
 
-    private static final int INTERNAL_IN_SEC = 1;
-
-    private Map<Tuple<String, Integer>, LeapWindowMetric> invokerLeapWindowMetricStorage = new ConcurrentHashMap<>(16, 0.5F);
+    private Map<Tuple<String, Integer>, RelativeLeapWindowMetric> invokerLeapWindowMetricStorage = new ConcurrentHashMap<>(16, 0.5F);
 
     private Map<Tuple<String, Integer>, LongAdder> invokerUsedThreadCountStorage = new ConcurrentHashMap<>();
 
@@ -65,9 +64,9 @@ public class LeapWindowInvokerMetricImpl implements InvokerMetric {
                 threadCounter = invokerUsedThreadCountStorage.get(key);
             }
             threadCounter.decrement();
-            if (costTime != -1){
-                LeapWindowMetric leapWindowMetric = invokerLeapWindowMetricStorage.get(key);
-                leapWindowMetric.addPass(costTime);
+            if (costTime != -1) {
+                RelativeLeapWindowMetric relativeLeapWindowMetric = invokerLeapWindowMetricStorage.get(key);
+                relativeLeapWindowMetric.addRtt(costTime);
             }
         });
     }
@@ -85,19 +84,13 @@ public class LeapWindowInvokerMetricImpl implements InvokerMetric {
     }
 
     private PerformanceIndicator doGetPerformanceIndicator(Tuple<String, Integer> key) {
-        LeapWindowMetric leapWindowMetric = invokerLeapWindowMetricStorage.get(key);
-        if (leapWindowMetric == null) {
+        RelativeLeapWindowMetric relativeLeapWindowMetric = invokerLeapWindowMetricStorage.get(key);
+        if (relativeLeapWindowMetric == null) {
             return null;
         }
-        long current = System.currentTimeMillis() % WINDOW_LENGTH;
-        WindowPerformance windowPerformance;
-        if (current <= 100) {
-            windowPerformance = leapWindowMetric.getPreviousWindowPerformance();
-        } else {
-            windowPerformance = leapWindowMetric.getCurrentWindowPerformance();
-        }
 
-        if (windowPerformance == null) {
+        long avg = relativeLeapWindowMetric.getAvg();
+        if (avg == 0) {
             return null;
         }
 
@@ -105,27 +98,20 @@ public class LeapWindowInvokerMetricImpl implements InvokerMetric {
         if (usedThreadCounter == null) {
             return null;
         }
-
-        long totalCount = windowPerformance.getTotalCount();
-        long totalCostTime = windowPerformance.getTotalCostTime();
-        if (totalCount == 0 || totalCostTime == 0) {
-            return null;
-        }
-
         long usedCount = usedThreadCounter.sum();
 
-        return new PerformanceIndicator(totalCostTime, totalCount, totalCostTime / totalCount, usedCount);
+        return new PerformanceIndicator(-1L, -1L, avg, usedCount);
     }
 
 
     private void doInit(Tuple<String, Integer> key) {
         lock.lock();
         try {
-            LeapWindowMetric leapWindowMetric = invokerLeapWindowMetricStorage.get(key);
-            if (leapWindowMetric == null) {
-                LOGGER.info("<InvokerMetric> init leapWindowMetric,key:" + key);
-                leapWindowMetric = new LeapWindowMetric(WINDOW_LENGTH, INTERNAL_IN_SEC);
-                invokerLeapWindowMetricStorage.putIfAbsent(key, leapWindowMetric);
+            RelativeLeapWindowMetric relativeLeapWindowMetric = invokerLeapWindowMetricStorage.get(key);
+            if (relativeLeapWindowMetric == null) {
+                LOGGER.info("<InvokerMetric> init relativeLeapWindowMetric,key:" + key);
+                relativeLeapWindowMetric = new RelativeLeapWindowMetric(WINDOW_LENGTH);
+                invokerLeapWindowMetricStorage.putIfAbsent(key, relativeLeapWindowMetric);
             }
 
             LongAdder usedThreadCounter = invokerUsedThreadCountStorage.get(key);
@@ -147,16 +133,16 @@ public class LeapWindowInvokerMetricImpl implements InvokerMetric {
         return new Tuple<>(host, port);
     }
 
-    public static LeapWindowInvokerMetricImpl getInstance() {
+    public static RelativeLeapWindowInvokerMetricImpl getInstance() {
         return Inner.instance;
     }
 
-    protected LeapWindowInvokerMetricImpl() {
+    protected RelativeLeapWindowInvokerMetricImpl() {
 
     }
 
     protected static final class Inner {
-        private static final LeapWindowInvokerMetricImpl instance = new LeapWindowInvokerMetricImpl();
+        private static final RelativeLeapWindowInvokerMetricImpl instance = new RelativeLeapWindowInvokerMetricImpl();
 
     }
 

@@ -2,6 +2,7 @@ package com.aliware.tianchi;
 
 import com.aliware.tianchi.metric.InvokerMetric;
 import com.aliware.tianchi.metric.LeapWindowInvokerMetricImpl;
+import com.aliware.tianchi.metric.RelativeLeapWindowInvokerMetricImpl;
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.common.logger.Logger;
@@ -19,7 +20,7 @@ import org.apache.dubbo.rpc.*;
 public class TestClientFilter implements Filter {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestClientFilter.class);
 
-    private InvokerMetric metric = LeapWindowInvokerMetricImpl.getInstance();
+    private InvokerMetric metric = RelativeLeapWindowInvokerMetricImpl.getInstance();
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
@@ -42,12 +43,18 @@ public class TestClientFilter implements Filter {
 
     @Override
     public Result onResponse(Result result, Invoker<?> invoker, Invocation invocation) {
-        // 记录结束时间
-        long end = System.currentTimeMillis();
-        // 从上下文中拿出起始时间
-        long start = Long.valueOf(RpcContext.getContext().getAttachment("invoke_start"));
+        long costTime = -1;
+
+        if (result.getException() == null){
+            // 记录结束时间
+            long end = System.currentTimeMillis();
+            // 从上下文中拿出起始时间
+            long start = Long.valueOf(RpcContext.getContext().getAttachment("invoke_start"));
+            costTime = end -start;
+        }
+
         // 埋点
-        metric.invokeEnd(invoker, end - start);
+        metric.invokeEnd(invoker, costTime);
 
         return result;
     }
