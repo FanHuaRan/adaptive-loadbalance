@@ -33,7 +33,7 @@ public class TestClientFilter implements Filter {
             // 起始时间放入上下文缓存当中
             RpcContext.getContext().setAttachment("invoke_start", String.valueOf(start));
             // 设置超时时间
-            invoker.getUrl().addParameter(Constants.TIMEOUT_KEY, DEFAULT_TIME_OUT);
+            RpcContext.getContext().setAttachment(Constants.TIMEOUT_KEY, String.valueOf(DEFAULT_TIME_OUT));
             // 执行远程调用，注意调用是异步执行
             Result result = invoker.invoke(invocation);
 
