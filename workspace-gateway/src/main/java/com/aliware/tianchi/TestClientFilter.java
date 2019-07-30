@@ -1,7 +1,6 @@
 package com.aliware.tianchi;
 
 import com.aliware.tianchi.metric.InvokerMetric;
-import com.aliware.tianchi.metric.LeapWindowInvokerMetricImpl;
 import com.aliware.tianchi.metric.RelativeLeapWindowInvokerMetricImpl;
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.extension.Activate;
@@ -20,6 +19,8 @@ import org.apache.dubbo.rpc.*;
 public class TestClientFilter implements Filter {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestClientFilter.class);
 
+    private static final int DEFAULT_TIME_OUT = 400;
+
     private InvokerMetric metric = RelativeLeapWindowInvokerMetricImpl.getInstance();
 
     @Override
@@ -31,6 +32,9 @@ public class TestClientFilter implements Filter {
             metric.invokeStart(invoker);
             // 起始时间放入上下文缓存当中
             RpcContext.getContext().setAttachment("invoke_start", String.valueOf(start));
+            // 设置超时时间
+            RpcContext.getContext().setAttachment(Constants.TIMEOUT_KEY, String.valueOf(DEFAULT_TIME_OUT));
+            RpcContext.getContext().set(Constants.TIMEOUT_KEY, String.valueOf(DEFAULT_TIME_OUT));
             // 执行远程调用，注意调用是异步执行
             Result result = invoker.invoke(invocation);
 
