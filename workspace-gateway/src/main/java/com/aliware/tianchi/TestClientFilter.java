@@ -56,13 +56,13 @@ public class TestClientFilter implements Filter {
     public Result onResponse(Result result, Invoker<?> invoker, Invocation invocation) {
         long costTime = -1;
 
-        if (result.getException() == null) {
+//        if (result.getException() == null) {
             // 记录结束时间
             long end = System.currentTimeMillis();
             // 从上下文中拿出起始时间
             long start = Long.valueOf(RpcContext.getContext().getAttachment("invoke_start"));
             costTime = end - start;
-        }
+//        }
 
         // 埋点
         metric.invokeEnd(invoker, costTime);
