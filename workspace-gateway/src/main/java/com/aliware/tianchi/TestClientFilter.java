@@ -33,14 +33,14 @@ public class TestClientFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try {
-//            // 记录响应起始时间
-//            long start = System.currentTimeMillis();
-//            // 指标统计起始埋点
+            // 记录响应起始时间
+            long start = System.currentTimeMillis();
+            // 指标统计起始埋点
 //            metric.invokeStart(invoker);
-//            // 起始时间放入上下文缓存当中
-//            RpcContext.getContext().setAttachment("invoke_start", String.valueOf(start));
-//            // 设置超时时间
-////            RpcContext.getContext().setAttachment(Constants.TIMEOUT_KEY, String.valueOf(DEFAULT_TIME_OUT));
+            // 起始时间放入上下文缓存当中
+            RpcContext.getContext().setAttachment("invoke_start", String.valueOf(start));
+            // 设置超时时间
+//            RpcContext.getContext().setAttachment(Constants.TIMEOUT_KEY, String.valueOf(DEFAULT_TIME_OUT));
 //            setTimeout(invoker.getUrl(), invocation, String.valueOf(DEFAULT_TIME_OUT));
             // 执行远程调用，注意调用是异步执行
             Result result = invoker.invoke(invocation);
@@ -54,31 +54,31 @@ public class TestClientFilter implements Filter {
 
     @Override
     public Result onResponse(Result result, Invoker<?> invoker, Invocation invocation) {
-//        long costTime = -1;
-//
-////        if (result.getException() == null) {
-//            // 记录结束时间
-//            long end = System.currentTimeMillis();
-//            // 从上下文中拿出起始时间
-//            long start = Long.valueOf(RpcContext.getContext().getAttachment("invoke_start"));
-//            costTime = end - start;
-////        }
+        long costTime = -1;
+
+//        if (result.getException() == null) {
+        // 记录结束时间
+        long end = System.currentTimeMillis();
+        // 从上下文中拿出起始时间
+        long start = Long.valueOf(RpcContext.getContext().getAttachment("invoke_start"));
+        costTime = end - start;
+//        }
 //
 //        // 埋点
 //        metric.invokeEnd(invoker, costTime);
-        UserLoadBalance.addWorkRequest(invoker.getUrl().getPort());
+        UserLoadBalance.recordLatency(invoker.getUrl().getPort(), costTime);
 
         return result;
     }
 
-    private void setTimeout(URL url, Invocation invocation, String timeout){
+    private void setTimeout(URL url, Invocation invocation, String timeout) {
         String key = invocation.getMethodName() + "." + Constants.TIMEOUT_KEY;
         putParameter(url, key, timeout);
     }
 
-    public static void putParameter(URL url, String key, String value){
+    public static void putParameter(URL url, String key, String value) {
         try {
-            if(StringUtils.isEquals(url.getParameter(key),value)){
+            if (StringUtils.isEquals(url.getParameter(key), value)) {
                 return;
             }
 
@@ -89,15 +89,15 @@ public class TestClientFilter implements Filter {
             Method method = URL.class.getDeclaredMethod("buildString", boolean.class, boolean.class, String[].class);
             method.setAccessible(true);
             method.invoke(url, false, true, null);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static void updateUnmodifiedMap(Map unmodifiedMap, String key, String value) throws Exception {
         Class[] classes = Collections.class.getDeclaredClasses();
-        for(Class cl : classes) {
-            if("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
+        for (Class cl : classes) {
+            if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
                 Field field = cl.getDeclaredField("m");
                 field.setAccessible(true);
                 Object obj = field.get(unmodifiedMap);

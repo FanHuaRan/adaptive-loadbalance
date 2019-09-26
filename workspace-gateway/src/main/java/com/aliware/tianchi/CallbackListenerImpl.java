@@ -39,8 +39,8 @@ public class CallbackListenerImpl implements CallbackListener {
 //        realTimeDynamicInvokerWeight.setCpuCore(host, port, cpuCore);
 
         // 被压init
-        for (int i = 0; i < threads; i++){
-            UserLoadBalance.addWorkRequest(port);
+        for (int i = 0; i < threads; i++) {
+            UserLoadBalance.recordLatency(port, 0);
         }
 
     }
