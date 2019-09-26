@@ -33,15 +33,15 @@ public class TestClientFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try {
-            // 记录响应起始时间
-            long start = System.currentTimeMillis();
-            // 指标统计起始埋点
-            metric.invokeStart(invoker);
-            // 起始时间放入上下文缓存当中
-            RpcContext.getContext().setAttachment("invoke_start", String.valueOf(start));
-            // 设置超时时间
-//            RpcContext.getContext().setAttachment(Constants.TIMEOUT_KEY, String.valueOf(DEFAULT_TIME_OUT));
-            setTimeout(invoker.getUrl(), invocation, String.valueOf(DEFAULT_TIME_OUT));
+//            // 记录响应起始时间
+//            long start = System.currentTimeMillis();
+//            // 指标统计起始埋点
+//            metric.invokeStart(invoker);
+//            // 起始时间放入上下文缓存当中
+//            RpcContext.getContext().setAttachment("invoke_start", String.valueOf(start));
+//            // 设置超时时间
+////            RpcContext.getContext().setAttachment(Constants.TIMEOUT_KEY, String.valueOf(DEFAULT_TIME_OUT));
+//            setTimeout(invoker.getUrl(), invocation, String.valueOf(DEFAULT_TIME_OUT));
             // 执行远程调用，注意调用是异步执行
             Result result = invoker.invoke(invocation);
 
@@ -54,18 +54,19 @@ public class TestClientFilter implements Filter {
 
     @Override
     public Result onResponse(Result result, Invoker<?> invoker, Invocation invocation) {
-        long costTime = -1;
-
-//        if (result.getException() == null) {
-            // 记录结束时间
-            long end = System.currentTimeMillis();
-            // 从上下文中拿出起始时间
-            long start = Long.valueOf(RpcContext.getContext().getAttachment("invoke_start"));
-            costTime = end - start;
-//        }
-
-        // 埋点
-        metric.invokeEnd(invoker, costTime);
+//        long costTime = -1;
+//
+////        if (result.getException() == null) {
+//            // 记录结束时间
+//            long end = System.currentTimeMillis();
+//            // 从上下文中拿出起始时间
+//            long start = Long.valueOf(RpcContext.getContext().getAttachment("invoke_start"));
+//            costTime = end - start;
+////        }
+//
+//        // 埋点
+//        metric.invokeEnd(invoker, costTime);
+        BackPressureLoadBalance.addWorkRequest(invoker.getUrl().getPort());
 
         return result;
     }

@@ -35,8 +35,14 @@ public class CallbackListenerImpl implements CallbackListener {
         Integer threads = endPointInfoMsg.getProtocolConfig().getThreads();
         Integer cpuCore = endPointInfoMsg.getInstanceInfo().getCpuCore();
 
-        realTimeDynamicInvokerWeight.setThreadCount(host, port, threads);
-        realTimeDynamicInvokerWeight.setCpuCore(host, port, cpuCore);
+//        realTimeDynamicInvokerWeight.setThreadCount(host, port, threads);
+//        realTimeDynamicInvokerWeight.setCpuCore(host, port, cpuCore);
+
+        // 被压init
+        for (int i = 0; i < threads; i++){
+            BackPressureLoadBalance.addWorkRequest(port);
+        }
+
     }
 
 }
