@@ -66,7 +66,7 @@ public class TestClientFilter implements Filter {
 //
 //        // 埋点
 //        metric.invokeEnd(invoker, costTime);
-        BackPressureLoadBalance.addWorkRequest(invoker.getUrl().getPort());
+        UserLoadBalance.addWorkRequest(invoker.getUrl().getPort());
 
         return result;
     }
