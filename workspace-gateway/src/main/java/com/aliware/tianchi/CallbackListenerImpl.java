@@ -40,7 +40,7 @@ public class CallbackListenerImpl implements CallbackListener {
 
         // 被压init
         for (int i = 0; i < threads; i++){
-            BackPressureLoadBalance.addWorkRequest(port);
+            UserLoadBalance.addWorkRequest(port);
         }
 
     }
